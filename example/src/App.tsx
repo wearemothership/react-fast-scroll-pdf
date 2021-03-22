@@ -33,9 +33,7 @@ const App = (): JSX.Element => {
 	const fileChanged = (ev: SyntheticEvent<HTMLInputElement>) => {
 		const target = ev.target as HTMLInputElement;
 		const file = target.files?.[0]
-		//Step 3:Read the file as ArrayBuffer
 		if (file) {
-			//Step 2: Read the file using file reader
 			var fileReader = new FileReader();  
 
 			fileReader.onload = (e) => {
