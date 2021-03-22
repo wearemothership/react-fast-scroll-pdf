@@ -23,21 +23,16 @@ interface IUsePDF {
 	enableAnnotations?: boolean
 }
 
-interface IPDFDocument {
-	source: DocumentInitParameters,
-	loadingImage?: IconDefinition | string,
-	quality?: number,
-	enableAnnotations: boolean,
-	width: string,
-	height: string,
-	className: string
-	changeZoom: ({ scale, viewer, scrollContainer }) => void
-}
-
 type TPage = IPlaceholderPage | IPDFPage
 
 interface IPDFJSLib {
 	AnnotationLayer: AnnotationLayer,
 	GlobalWorkerOptions: GlobalWorkerOptions,
 	getDocument: getDocument
+}
+
+interface IChangeZoom {
+	scale: number,
+	viewer?: ReactNode,
+	scrollContainer?: ReactNode
 }

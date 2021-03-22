@@ -26,7 +26,7 @@ const PDFPage = ({
 	</div>
 );
 
-export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }: IUsePDF) => {
+const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }: IUsePDF) => {
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
 	const [pages, setPages] = useState<JSX.Element[]>([]);
 	const scaleRef = useRef(1);
@@ -113,10 +113,8 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 		}
 	}, [renderPage]);
 
-	const changeZoom = useCallback(({ scale, viewer, scrollContainer }) => {
-		const scroller = scrollContainer;
+	const changeZoom = useCallback(({ scale, viewer, scrollContainer }: IChangeZoom) => {
 		renderQueue.current.length = 0;
-		const { children } = viewer;
 		scaleRef.current = scale;
 		const oldHeight = viewportRef.current?.height ?? 1;
 		pdfDoc?.getPage(1).then((page) => {
@@ -124,9 +122,12 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 			const { width, height } = viewportRef.current;
 			page.cleanup();
 			let currPage = 1;
-			for (let i = 0; i < children.length; i += 1) {
-				if (children[i].offsetTop <= scroller.scrollTop + 33) {
-					currPage = i + 1;
+			if (viewer && scrollContainer) {
+				const { children } = viewer ?? {};
+				for (let i = 0; i < children.length; i += 1) {
+					if (children[i].offsetTop <= scrollContainer.scrollTop + 33) {
+						currPage = i + 1;
+					}
 				}
 			}
 			setPages((oldPages) => {
@@ -134,11 +135,11 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 					if (!pg) {
 						return <Fragment></Fragment>;
 					}
-					const { imageSrc, children: PDFChildren } = pg.props;
+					const { imageSrc, children } = pg.props;
 					if (imageSrc) {
 						return (
 							<PDFPage pageNum={index} width={width} height={height} imageSrc={imageSrc}>
-								{ PDFChildren }
+								{ children }
 							</PDFPage>
 						);
 					}
@@ -156,8 +157,12 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 					queueRenderPage(i);
 				}
 			}
-			const ratio = viewportRef.current.height / oldHeight;
-			scroller.scrollTop *= ratio;
+
+			if (scrollContainer) {
+				const scroller = scrollContainer;
+				const ratio = viewportRef.current.height / oldHeight;
+				scroller.scrollTop *= ratio;
+			}
 		});
 	}, [pdfDoc, queueRenderPage, loadingImage]);
 
@@ -218,15 +223,4 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 	};
 };
 
-export const PDFDocument = ({
-	source, loadingImage, quality, enableAnnotations, changeZoom, width = "600px", height = "800px", className
-}: IPDFDocument): JSX.Element => {
-	const { pages, changeZoom: doChangeZoom } = usePDF({ source, loadingImage, quality, enableAnnotations });
-	changeZoom = doChangeZoom
-
-	return (
-		<div style={{ width, height }} className={className}>
-			{ pages }
-		</div>
-	)
-}
+export { usePDF }
