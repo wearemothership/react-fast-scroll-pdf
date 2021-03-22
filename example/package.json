@@ -5,10 +5,10 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "pdf-viewer": "file:..",
     "react": "file:../node_modules/react",
-    "react-dom": "^16.9.0",
-    "react-scripts": "^3.0.1",
-    "pdf-viewer": "file:.."
+    "react-dom": "^17.0.1",
+    "react-scripts": "^3.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -21,5 +21,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "@types/react-dom": "^17.0.2"
+  }
 }
