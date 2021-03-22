@@ -1,10 +1,14 @@
 # pdf-viewer
 
-# background
+> Image-based PDF viewer using pdfjs
+
+[![NPM](https://img.shields.io/npm/v/pdf-viewer.svg)](https://www.npmjs.com/package/pdf-viewer) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
+# Background
 I needed a way to very quickly render a complete PDF document but without using a lot of canvas elements (iPads etc limit the amount of canvas memory). This uses a single canvas element 
 and uses pdfjs-dist to render each pdf page before converting it to a jpeg image. PDF annotations are then placed on top of the image so that links etc still work.
 
-## install
+## Install
 ```bash
 npm install --save @mothershipsoft/pdf-viewer
 ```
