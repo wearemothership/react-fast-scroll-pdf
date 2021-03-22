@@ -13,43 +13,67 @@ and uses pdfjs-dist to render each pdf page before converting it to a jpeg image
 npm install --save @mothershipsoft/pdf-viewer
 ```
 
+## Example
+From the main src folder run:
+```bash
+npm install
+npm run example
+```
+
 ## Usage
 
-You can import the default PDFDocument element into React
+You can import the usePDF hook element into React as below (see Example above to see this running)
 ```jsx
-import React, { useRef, useState } from "react"
-import usePDF from "@mothershipsoft/pdf-viewer"
+import React, { SyntheticEvent, useRef, useState } from 'react';
+import { usePDF } from "pdf-viewer";
 
-const ExampleComponent = (): JSX.Element => {
-	const scrollContainerRef = useRef();
-	const viewerRef = useRef();
-	const [scale, useScale] = useScale();
+const App = (): JSX.Element => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+	const viewerRef = useRef<HTMLDivElement>(null);
+	const [zoom, setZoom] = useState<number>(1);
+	const [file, setFile] = useState<Uint8Array>();
 	const sourceOptions = {
-		url: "./example.pdf"
+		data: file
 	}
 	const { pages, changeZoom } = usePDF({
 		source: sourceOptions
 	})
-	const ZOOM_CHANGE = 0.1;
+	const ZOOM_CHANGE: number = 0.1;
 
 	const zoomIn = () => {
-		const newScale += ZOOM_CHANGE;
-		if (newScale > 0) {
-			setZoom(newScale);
-			changeZoom({ scale: newScale })
+		const newZoom = zoom + ZOOM_CHANGE;
+		if (newZoom > 0) {
+			setZoom(newZoom);
+			changeZoom({ scale: newZoom })
 		}
 	}
 
 	const zoomOut = () => {
-		const newScale -= ZOOM_CHANGE;
-		if (newScale < 2) {
-			setZoom(newScale);
-			changeZoom({ scale: newScale })
+		const newZoom = zoom - ZOOM_CHANGE;
+		if (newZoom < 2) {
+			setZoom(newZoom);
+			changeZoom({ scale: newZoom })
 		}
 	}
-	
+
+	const fileChanged = (ev: SyntheticEvent<HTMLInputElement>) => {
+		const target = ev.target as HTMLInputElement;
+		const file = target.files?.[0]
+		if (file) {
+			var fileReader = new FileReader();  
+
+			fileReader.onload = (e) => {
+				const { result } = e.target as FileReader;
+				const arr = new Uint8Array(result as ArrayBuffer);
+				setFile(arr);
+			};
+			fileReader.readAsArrayBuffer(file);
+		}
+	}
+
 	return (
-		<>
+		<div className="App">
+			<input type="file" onChange={fileChanged} />
 			<div id="scrollContainer" ref={scrollContainerRef} style={{ overflow: "scroll", height: "800px" }}>
 				<div id="viewer" ref={viewerRef}>
 					{pages}
@@ -57,8 +81,8 @@ const ExampleComponent = (): JSX.Element => {
 			</div>
 			<button type="button" onClick={zoomIn}>+</button>
 			<button type="button" onClick={zoomOut}>-</button>
-			
-		</>
+		</div>
+	);
 }
 ```
 
