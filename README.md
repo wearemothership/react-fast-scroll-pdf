@@ -2,7 +2,7 @@
 
 > Image-based PDF viewer using pdfjs
 
-[![NPM](https://img.shields.io/npm/v/react-fast-scroll-pdfsvg)](https://www.npmjs.com/package/react-fast-scroll-pdf) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/react-fast-scroll-pdf.svg)](https://www.npmjs.com/package/react-fast-scroll-pdf) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 # Background
 I needed a way to very quickly render a complete PDF document but without using a lot of canvas elements (iPads etc limit the amount of canvas memory). This uses a single canvas element 
