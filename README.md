@@ -59,11 +59,11 @@ const ExampleComponent = (): JSX.Element => {
 ```
 
 ### Arguments
-usePDF takes the following possible arguments: 
-source: a PDFJS source object (see below)
-loadingImage: (optional) an image that will be spun in the middle of loading pages (default: Font Awesome Spinner).
-quality: (optional) jpeg image quality between 1 and 100. (default: 80)
-enableAnnotations: (optional) whether to create an annotations layer. (default: true)
+- usePDF takes the following possible arguments: 
+- source: a PDFJS source object (see below)
+- loadingImage: (optional) an image that will be spun in the middle of loading pages (default: Font Awesome Spinner).
+- quality: (optional) jpeg image quality between 1 and 100. (default: 80)
+- enableAnnotations: (optional) whether to create an annotations layer. (default: true)
 
 ### Returns
 pages: a fragment of Placeholder pages or PDFPages (as images) as div & img elements
