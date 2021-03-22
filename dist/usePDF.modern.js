@@ -3,6 +3,24 @@ import React, { useState, useRef, useMemo, useCallback, Fragment, useEffect } fr
 import parse from 'react-html-parser';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
 var styles = {"spinner":"_w5_ib","rotation":"_3BERG"};
 
 var CMAP_URL = "pdfjs-dist/cmaps/";
@@ -161,9 +179,7 @@ var usePDF = function usePDF(_ref3) {
     var scale = _ref5.scale,
         viewer = _ref5.viewer,
         scrollContainer = _ref5.scrollContainer;
-    var scroller = scrollContainer;
     renderQueue.current.length = 0;
-    var children = viewer.children;
     scaleRef.current = scale;
     var oldHeight = (_viewportRef$current$ = (_viewportRef$current2 = viewportRef.current) === null || _viewportRef$current2 === void 0 ? void 0 : _viewportRef$current2.height) != null ? _viewportRef$current$ : 1;
     pdfDoc === null || pdfDoc === void 0 ? void 0 : pdfDoc.getPage(1).then(function (page) {
@@ -176,9 +192,14 @@ var usePDF = function usePDF(_ref3) {
       page.cleanup();
       var currPage = 1;
 
-      for (var i = 0; i < children.length; i += 1) {
-        if (children[i].offsetTop <= scroller.scrollTop + 33) {
-          currPage = i + 1;
+      if (viewer && scrollContainer) {
+        var _ref6 = viewer != null ? viewer : {},
+            children = _ref6.children;
+
+        for (var i = 0; i < children.length; i += 1) {
+          if (children[i].offsetTop <= scrollContainer.scrollTop + 33) {
+            currPage = i + 1;
+          }
         }
       }
 
@@ -190,7 +211,7 @@ var usePDF = function usePDF(_ref3) {
 
           var _pg$props = pg.props,
               imageSrc = _pg$props.imageSrc,
-              PDFChildren = _pg$props.children;
+              children = _pg$props.children;
 
           if (imageSrc) {
             return React.createElement(PDFPage, {
@@ -198,7 +219,7 @@ var usePDF = function usePDF(_ref3) {
               width: width,
               height: height,
               imageSrc: imageSrc
-            }, PDFChildren);
+            }, children);
           }
 
           return React.createElement(PlaceholderPage, {
@@ -221,8 +242,11 @@ var usePDF = function usePDF(_ref3) {
         }
       }
 
-      var ratio = viewportRef.current.height / oldHeight;
-      scroller.scrollTop *= ratio;
+      if (scrollContainer) {
+        var scroller = scrollContainer;
+        var ratio = viewportRef.current.height / oldHeight;
+        scroller.scrollTop *= ratio;
+      }
     });
   }, [pdfDoc, queueRenderPage, loadingImage]);
   useEffect(function () {
@@ -235,12 +259,12 @@ var usePDF = function usePDF(_ref3) {
         setPages(function (oldPages) {
           var _viewportRef$current4;
 
-          var _ref6 = (_viewportRef$current4 = viewportRef.current) != null ? _viewportRef$current4 : {
+          var _ref7 = (_viewportRef$current4 = viewportRef.current) != null ? _viewportRef$current4 : {
             width: 100,
             height: 100
           },
-              width = _ref6.width,
-              height = _ref6.height;
+              width = _ref7.width,
+              height = _ref7.height;
 
           var numPages = pdfDoc.numPages;
           var newPages = [].concat(oldPages);
@@ -269,12 +293,10 @@ var usePDF = function usePDF(_ref3) {
         var _pdfjsLib$current;
 
         pdfjsLib.current.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-        var loadingTask = (_pdfjsLib$current = pdfjsLib.current) === null || _pdfjsLib$current === void 0 ? void 0 : _pdfjsLib$current.getDocument({
+        var loadingTask = (_pdfjsLib$current = pdfjsLib.current) === null || _pdfjsLib$current === void 0 ? void 0 : _pdfjsLib$current.getDocument(_extends({
           cMapUrl: CMAP_URL,
-          cMapPacked: true,
-          url: source,
-          httpHeaders: source.httpHeaders
-        });
+          cMapPacked: true
+        }, source));
         loadingTask.promise.then(function (pdfDocument) {
           setPdfDoc(pdfDocument);
         });
@@ -292,32 +314,6 @@ var usePDF = function usePDF(_ref3) {
     pages: pages
   };
 };
-var PDFDocument = function PDFDocument(_ref7) {
-  var source = _ref7.source,
-      loadingImage = _ref7.loadingImage,
-      quality = _ref7.quality,
-      enableAnnotations = _ref7.enableAnnotations,
-      _ref7$width = _ref7.width,
-      width = _ref7$width === void 0 ? "600px" : _ref7$width,
-      _ref7$height = _ref7.height,
-      height = _ref7$height === void 0 ? "800px" : _ref7$height,
-      className = _ref7.className;
 
-  var _usePDF = usePDF({
-    source: source,
-    loadingImage: loadingImage,
-    quality: quality,
-    enableAnnotations: enableAnnotations
-  }),
-      pages = _usePDF.pages;
-  return React.createElement("div", {
-    style: {
-      width: width,
-      height: height
-    },
-    className: className
-  }, pages);
-};
-
-export { PDFDocument, usePDF };
+export { usePDF };
 //# sourceMappingURL=usePDF.modern.js.map
