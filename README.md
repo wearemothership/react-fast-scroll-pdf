@@ -13,7 +13,7 @@ and uses pdfjs-dist to render each pdf page before converting it to a jpeg image
 npm install --save @wearemothership/react-fast-scroll-pdf
 ```
 
-## Example
+## Run the built-in example
 From the main src folder run:
 ```bash
 npm install
