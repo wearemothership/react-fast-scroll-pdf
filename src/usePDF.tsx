@@ -195,8 +195,7 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 					const loadingTask = pdfjsLib.current?.getDocument({
 						cMapUrl: CMAP_URL,
 						cMapPacked: true,
-						url: source,
-						httpHeaders: source.httpHeaders
+						...source
 					});
 					loadingTask.promise.then((pdfDocument: PDFDocumentProxy) => {
 						// Document loaded, specifying document for the viewer and
