@@ -94,7 +94,8 @@ const App = (): JSX.Element => {
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true)
 
 ### Returns
-pages: a fragment of Placeholder pages or PDFPages (as images) as div & img elements
+- pages: a fragment of Placeholder pages or PDFPages (as images) as div & img elements
+- changeZoom: call this function to zoom in on the pdf and recreate the images
 
 #### Advanced Options
 ##### On Zoom: Reload current page first
