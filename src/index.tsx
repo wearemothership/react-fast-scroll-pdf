@@ -194,6 +194,7 @@ export const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations =
 	useEffect(() => {
     if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
       prevSource.current = source;
+      setPages([]);
       // @ts-ignore
       import("pdfjs-dist/es5/build/pdf").then((lib) => {
         pdfjsLib.current = lib as IPDFJSLib;

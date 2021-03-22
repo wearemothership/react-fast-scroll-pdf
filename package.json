@@ -1,10 +1,10 @@
 {
-  "name": "pdf-viewer",
+  "name": "react-fast-scroll-pdf",
   "version": "1.0.0",
   "description": "Image-based PDF viewer using pdfjs",
   "author": "mothershipsoft",
   "license": "MIT",
-  "repository": "mothershipsoft/pdf-viewer",
+  "repository": "mothershipsoft/react-fast-scroll-pdf",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
