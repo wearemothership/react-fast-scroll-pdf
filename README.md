@@ -177,7 +177,9 @@ const App = (): JSX.Element => {
 	);
 }
 ```
-PlaceholderPage and PDFPage can also be accessed via an import and they may be useful here.
+
+## PDFPage and PlaceholderPage
+These two components can be accessed via an import and may be useful if you wish to add additional pages to the page list returned by the usePDF hook.
 
 ## Props
 ### FastScrollPDF
