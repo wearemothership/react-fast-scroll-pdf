@@ -1,21 +1,28 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable import/no-unresolved */
 // @ts-ignore
 import { PDFLinkService } from "pdfjs-dist/es5/web/pdf_viewer";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo
 } from "react";
-import PDFPage from "../components/PDFPage";
-import PlaceholderPage from "../components/PlaceholderPage";
+import _ from "lodash";
 import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/display/api";
 import { PageViewport } from "pdfjs-dist/types/display/display_utils";
-import _ from "lodash";
+import PDFPage from "../components/PDFPage";
+import PlaceholderPage from "../components/PlaceholderPage";
 
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
-const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }: IUsePDF) => {
+const usePDF = ({
+	source, loadingImage, quality = 80, enableAnnotations = true
+}: IUsePDF): TUsePDF => {
+	if (quality < 1 || quality > 100) {
+		throw new Error("The 'quality' prop must be between 1 and 100");
+	}
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
 	const [pages, setPages] = useState<(JSX.Element | undefined)[]>([]);
 	const scaleRef = useRef(1);
-  	const prevSource = useRef();
+	const prevSource = useRef();
 	const viewportRef = useRef<PageViewport>();
 	const renderQueue = useRef<number[]>([]);
 	const pdfjsLib = useRef<Partial<IPDFJSLib>>({});
@@ -67,7 +74,7 @@ const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }
 								width={width}
 								height={height}
 								imageSrc={pageCanvasRef.current.toDataURL("image/jpeg", quality / 100)}
-                				key={`page${num}`}
+								key={`page${num}`}
 							>
 								{ enableAnnotations ? <div /> : null}
 							</PDFPage>
@@ -91,13 +98,13 @@ const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }
 
 	const queueRenderPage = useCallback((num: number) => {
 		if (pageRendering.current) {
-      if (!renderQueue.current.includes(num)) {
-        renderQueue.current.push(num);
-      }
-    }
-    else {
-      renderPage(num);
-    }
+			if (!renderQueue.current.includes(num)) {
+				renderQueue.current.push(num);
+			}
+		}
+		else {
+			renderPage(num);
+		}
 	}, [renderPage]);
 
 	const changeZoom = useCallback(({ scale, viewer, scrollContainer }: IChangeZoom) => {
@@ -123,14 +130,17 @@ const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }
 						return undefined;
 					}
 					const { imageSrc, children } = pg.props;
+					const key = `page${index}`;
 					if (imageSrc) {
 						return (
-							<PDFPage key={`page${index}`} pageNum={index} width={width} height={height} imageSrc={imageSrc}>
+							<PDFPage key={key} pageNum={index} width={width} height={height} imageSrc={imageSrc}>
 								{ children }
 							</PDFPage>
 						);
 					}
-					return <PlaceholderPage key={`page${index}`} width={width} height={height} loadingImage={loadingImage} />;
+					return (
+						<PlaceholderPage key={key} width={width} height={height} loadingImage={loadingImage} />
+					);
 				});
 				return newPages;
 			});
@@ -176,30 +186,30 @@ const usePDF = ({ source, loadingImage, quality = 80, enableAnnotations = true }
 	}, [pdfDoc, queueRenderPage, loadingImage]);
 
 	useEffect(() => {
-    if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
-      prevSource.current = source;
-      setPages([]);
-      // @ts-ignore
-      import("pdfjs-dist/es5/build/pdf").then((lib) => {
-        pdfjsLib.current = lib as IPDFJSLib;
-        // @ts-ignore
-        import("pdfjs-dist/es5/build/pdf.worker.entry")
-          .then((pdfjsWorker) => {
-            pdfjsLib.current.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
+			prevSource.current = source;
+			setPages([]);
+			// @ts-ignore
+			import("pdfjs-dist/es5/build/pdf").then((lib) => {
+				pdfjsLib.current = lib as IPDFJSLib;
+				// @ts-ignore
+				import("pdfjs-dist/es5/build/pdf.worker.entry")
+					.then((pdfjsWorker) => {
+						pdfjsLib.current.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-            const loadingTask = pdfjsLib.current?.getDocument({
-              cMapUrl: CMAP_URL,
-              cMapPacked: true,
-              ...source
-            });
-            loadingTask.promise.then((pdfDocument: PDFDocumentProxy) => {
-              // Document loaded, specifying document for the viewer and
-              // the (optional) linkService.
-              setPdfDoc(pdfDocument);
-            });
-          });
-      });
-    }
+						const loadingTask = pdfjsLib.current?.getDocument({
+							cMapUrl: CMAP_URL,
+							cMapPacked: true,
+							...source
+						});
+						loadingTask.promise.then((pdfDocument: PDFDocumentProxy) => {
+							// Document loaded, specifying document for the viewer and
+							// the (optional) linkService.
+							setPdfDoc(pdfDocument);
+						});
+					});
+			});
+		}
 	}, [source]);
 
 	useEffect(() => () => {

@@ -24,6 +24,17 @@ interface IUsePDF {
 	enableAnnotations?: boolean
 }
 
+interface IChangeScale {
+	scale: number,
+	scrollContainer?: ReactNode,
+	viewer?: ReactNode,
+}
+
+type TUsePDF = {
+	changeZoom: ({ scale, viewer, scrollContainer }: IChangeScale) => void,
+	pages: (JSX.Element | undefined)[]
+}
+
 type TPage = IPlaceholderPage | IPDFPage
 
 interface IPDFJSLib {
