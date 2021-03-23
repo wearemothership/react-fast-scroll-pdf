@@ -60,7 +60,7 @@ const App = (): JSX.Element => {
 export default App;
 ```
 ### Medium difficulty - use the inidividual components
-This is something that you may wish to do if you want to apply your own styles or get access to the individual components to sort layout out in your own way. Here you're going to the the 
+This is something that you may wish to do if you want to apply your own styles or get access to the individual components to sort layout out in your own way. Here you're going to use the 
 components along with the hook to give you lots of control over how you display the PDF. 
 
 #### Note
@@ -136,7 +136,9 @@ const App = (): JSX.Element => {
 		const newZoom = zoom + ZOOM_CHANGE;
 		if (newZoom > 0) {
 			setZoom(newZoom);
-			changeZoom({ scale: newZoom })
+			changeZoom({
+				scale: newZoom, viewer: viewerRef.current, scrollContainer: scrollContainerRef.current
+			});
 		}
 	}
 
@@ -144,7 +146,9 @@ const App = (): JSX.Element => {
 		const newZoom = zoom - ZOOM_CHANGE;
 		if (newZoom < 2) {
 			setZoom(newZoom);
-			changeZoom({ scale: newZoom })
+			changeZoom({
+				scale: newZoom, viewer: viewerRef.current, scrollContainer: scrollContainerRef.current
+			});
 		}
 	}
 
