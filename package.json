@@ -5,10 +5,9 @@
   "author": "mothershipsoft",
   "license": "MIT",
   "repository": "mothershipsoft/react-fast-scroll-pdf",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "dist/main/",
+  "module": "dist/esm/",
   "types": "dist/index.d.ts",
-  "jsnext:main": "dist/index.es.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -16,33 +15,65 @@
   "scripts": {
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
-    "build": "rm ./dist/* -f && microbundle-crl --format modern,cjs",
-    "start": "microbundle-crl watch --no-compress --format modern,cjs",
+    "build": "rm ./dist/* -r -f && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist",
+    "start": "rm ./dist/* -r -f && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist && rollup -c -w ",
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
     "example": "npm run build && cd example && npm install && npm start"
   },
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "lodash": "^4.17.21",
     "pdfjs-dist": "^2.6.347",
-    "react": "^17.0.1",
+    "react": "^17.0.2",
     "react-html-parser": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/plugin-transform-react-jsx": "^7.13.12",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "@babel/preset-react": "^7.12.13",
     "@babel/runtime": "^7.3.1",
-    "@testing-library/react-hooks": "^3.2.1",
-    "@types/jest": "^23.3.13",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-eslint": "^8.0.1",
+    "@rollup/plugin-image": "^2.0.6",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "@rollup/plugin-typescript": "^8.2.0",
+    "@testing-library/react-hooks": "^5.1.0",
+    "@types/jest": "^26.0.21",
     "@types/lodash": "^4.14.168",
-    "@types/react": "^16.7.22",
+    "@types/react": "^17.0.3",
     "@types/react-html-parser": "^2.0.1",
-    "cross-env": "^5.2.0",
-    "gh-pages": "^2.0.1",
-    "microbundle-crl": "^0.13.11",
-    "react-scripts": "^3.4.0",
+    "@typescript-eslint/eslint-plugin": "^4.19.0",
+    "@typescript-eslint/parser": "^4.19.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.0",
+    "gh-pages": "^3.1.0",
+    "postcss": "^8.2.8",
+    "react-scripts": "^4.0.3",
+    "rollup": "^2.42.3",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.0",
     "tslib": "^2.0.1",
-    "typescript": "^3.2.4"
+    "typescript": "^4.2.3"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react",
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-react-jsx",
+      "@babel/plugin-transform-runtime"
+    ]
   }
 }

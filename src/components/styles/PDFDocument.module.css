@@ -1,0 +1,22 @@
+.pdfDocument {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	width: 100%;
+	height: calc(100vh - 70px);
+}
+
+.viewer {
+	display: grid;
+	grid-gap: 0;
+	justify-items: center;
+	text-align: center;
+	row-gap: 16px;
+	transition: opacity 0.3s ease-in-out;
+}
+
+.viewer > div {
+	position: relative;
+	background-color: white;
+	box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+	margin: 32px 0;
+}

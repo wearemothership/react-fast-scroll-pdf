@@ -9,7 +9,7 @@
       "es2017"
     ],
     "sourceMap": true,
-    "allowJs": false,
+    "allowJs": true,
     "jsx": "preserve",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
@@ -26,7 +26,8 @@
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "rootDir": "src"
   },
   "include": [
     "src"
@@ -35,7 +36,6 @@
     "node_modules",
     "build",
     "dist",
-    "example",
-    "rollup.config.js"
+    "example"
   ]
 }

@@ -1,0 +1,42 @@
+.zoomButton {
+	width: 50px;
+	border-left: 0;
+	border-right: 0;
+	border-radius: 0;
+	margin-right: 3px;
+	margin-top: 0;
+	margin-bottom: 0;
+	background: none;
+	padding: 10px;
+	background-color: rgb(240, 240, 240);
+	color: rgb(0, 0, 0);
+	font-weight: 600;
+	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	transition: 0.2s all ease-out;
+	flex: 1
+}
+
+.buttonGroup {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-end;
+	width: 110px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	margin-left: auto;
+	margin-right: 3px;
+}
+
+.buttonGroup .zoomButton:first-of-type {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.buttonGroup .zoomButton:last-of-type {
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	margin-right: 0;
+}

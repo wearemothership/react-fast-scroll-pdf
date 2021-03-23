@@ -7,18 +7,19 @@ interface IPage {
 }
 
 interface IPlaceholderPage extends IPage {
-	loadingImage?: IconDefinition | string
+	loadingImage?: IconDefinition | string,
+	spin?: boolean
 }
 
-interface IPDFPage extends IPlaceholderPage {
+interface IPDFPage extends IPage {
 	pageNum: number,
 	imageSrc: string,
-	children: ReactNode
+	children?: ReactNode
 }
 
 interface IUsePDF {
 	source: DocumentInitParameters,
-	loadingImage?: IconDefinition | string,
+	loadingImage?: string,
 	quality?: number,
 	enableAnnotations?: boolean
 }
@@ -35,4 +36,24 @@ interface IChangeZoom {
 	scale: number,
 	viewer?: ReactNode,
 	scrollContainer?: ReactNode
+}
+
+interface IZoomButtons {
+	zoomChange: (zoom: number) => void,
+	zoomStep?: number,
+	zoomStart?: number,
+	minZoom?: number,
+	maxZoom?: number,
+	className?: string
+}
+
+interface IPDFDocument {
+	scrollContainerRef?: MutableRefObject<HTMLDivElement>,
+	viewerRef?: MutableRefObject<HTMLDivElement>,
+	pages: (JSX.Element | undefined)[],
+	className?: string
+}
+
+interface IFastScrollPDF extends IUsePDF {
+	className?: string
 }

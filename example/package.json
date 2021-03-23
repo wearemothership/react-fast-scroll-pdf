@@ -1,14 +1,14 @@
 {
-  "name": "pdf-viewer-example",
-  "homepage": "https://mothershipsoft.github.io/pdf-viewer",
-  "version": "0.0.0",
+  "name": "react-fast-scroll-pdf-example",
+  "homepage": "https://wearemothership.github.io/react-fast-scroll-pdf",
+  "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "pdf-viewer": "file:..",
-    "react": "file:../node_modules/react",
-    "react-dom": "^17.0.1",
-    "react-scripts": "^3.0.1"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-fast-scroll-pdf": "file:..",
+    "react-scripts": "^4.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
