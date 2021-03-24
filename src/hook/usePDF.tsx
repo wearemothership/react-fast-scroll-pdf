@@ -187,6 +187,8 @@ const usePDF = ({
 
 	useEffect(() => {
 		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
+			pdfDoc?.cleanup();
+			pdfDoc?.destroy();
 			prevSource.current = source;
 			setPages([]);
 			// @ts-ignore
@@ -210,7 +212,7 @@ const usePDF = ({
 					});
 			});
 		}
-	}, [source]);
+	}, [source, pdfDoc]);
 
 	useEffect(() => () => {
 		pdfDoc?.cleanup();
