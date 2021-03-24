@@ -1,7 +1,7 @@
 {
   "name": "react-fast-scroll-pdf-example",
   "homepage": "https://wearemothership.github.io/react-fast-scroll-pdf",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "license": "MIT",
   "private": true,
   "dependencies": {
