@@ -205,8 +205,6 @@ const usePDF = ({
 							...source
 						});
 						loadingTask.promise.then((pdfDocument: PDFDocumentProxy) => {
-							// Document loaded, specifying document for the viewer and
-							// the (optional) linkService.
 							setPdfDoc(pdfDocument);
 						});
 					});
