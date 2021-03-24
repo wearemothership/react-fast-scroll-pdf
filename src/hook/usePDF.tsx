@@ -29,8 +29,12 @@ const usePDF = ({
 	const pageCanvasRef = useRef(document.createElement("canvas"));
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
+	const docLoaded = useRef(false);
 
 	const renderPage = useCallback((num) => {
+		if (!docLoaded.current) {
+			return;
+		}
 		pageRendering.current = true;
 		// Using promise to fetch the page
 		pdfDoc?.getPage(num).then((page: PDFPageProxy) => {
@@ -81,7 +85,13 @@ const usePDF = ({
 						);
 						return newPages;
 					});
-
+				})
+				.catch((e) => {
+					if (e.name !== "RenderingCancelledException") {
+						console.error(`Render Page: ${e}`);
+					}
+				})
+				.finally(() => {
 					pageRendering.current = false;
 					page.cleanup();
 					if (renderQueue.current.length > 0) {
@@ -89,9 +99,6 @@ const usePDF = ({
 						const no = renderQueue.current.shift();
 						renderPage(no);
 					}
-				})
-				.catch((e) => {
-					console.error(e);
 				});
 		});
 	}, [pdfDoc, linkService, quality, enableAnnotations]);
@@ -160,35 +167,16 @@ const usePDF = ({
 				const ratio = viewportRef.current.height / oldHeight;
 				scroller.scrollTop *= ratio;
 			}
-		});
-	}, [pdfDoc, queueRenderPage, loadingImage]);
-
-	useEffect(() => {
-		if (pdfDoc) {
-			pdfDoc?.getPage(1).then((page) => {
-				viewportRef.current = page.getViewport({ scale: scaleRef.current });
-				page.cleanup();
-				setPages((oldPages) => {
-					const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
-					const { numPages } = pdfDoc;
-					const newPages = [...oldPages];
-					for (let i = 1; i <= numPages; i += 1) {
-						newPages[i] = <PlaceholderPage key={`page${i}`} width={width} height={height} loadingImage={loadingImage} />;
-					}
-					return newPages;
-				});
-
-				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
-					queueRenderPage(i);
-				}
-			});
-		}
+		})
+			.catch((e) => console.error(`Change Zoom ${e}`));
 	}, [pdfDoc, queueRenderPage, loadingImage]);
 
 	useEffect(() => {
 		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
 			pdfDoc?.cleanup();
 			pdfDoc?.destroy();
+			docLoaded.current = false;
+			renderQueue.current.length = 0;
 			prevSource.current = source;
 			setPages([]);
 			// @ts-ignore
@@ -205,6 +193,7 @@ const usePDF = ({
 							...source
 						});
 						loadingTask.promise.then((pdfDocument: PDFDocumentProxy) => {
+							docLoaded.current = true;
 							setPdfDoc(pdfDocument);
 						});
 					});
@@ -212,7 +201,31 @@ const usePDF = ({
 		}
 	}, [source, pdfDoc]);
 
+	useEffect(() => {
+		if (pdfDoc && docLoaded.current) {
+			pdfDoc.getPage(1).then((page) => {
+				viewportRef.current = page.getViewport({ scale: scaleRef.current });
+				page.cleanup();
+				setPages((oldPages) => {
+					const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
+					const { numPages } = pdfDoc;
+					const newPages = [...oldPages];
+					for (let i = 1; i <= numPages; i += 1) {
+						newPages[i] = <PlaceholderPage key={`page${i}`} width={width} height={height} loadingImage={loadingImage} />;
+					}
+					return newPages;
+				});
+
+				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
+					queueRenderPage(i);
+				}
+			})
+				.catch((e) => console.error(`UseEffect (pdfDoc, queueRenderPage, loadingImage) ${e}`));
+		}
+	}, [pdfDoc, queueRenderPage, loadingImage]);
+
 	useEffect(() => () => {
+		docLoaded.current = false;
 		pdfDoc?.cleanup();
 		pdfDoc?.destroy();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
