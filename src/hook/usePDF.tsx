@@ -117,7 +117,7 @@ const usePDF = ({
 	const changeZoom = useCallback(({ scale, viewer, scrollContainer }: IChangeZoom) => {
 		renderQueue.current.length = 0;
 		scaleRef.current = scale;
-		const oldHeight = viewportRef.current?.height ?? 1;
+		const oldTopPos = scrollContainer?.scrollTop / scrollContainer?.scrollHeight;
 		pdfDoc?.getPage(1).then((page) => {
 			viewportRef.current = page.getViewport({ scale });
 			const { width, height } = viewportRef.current;
@@ -164,8 +164,8 @@ const usePDF = ({
 
 			if (scrollContainer) {
 				const scroller = scrollContainer;
-				const ratio = viewportRef.current.height / oldHeight;
-				scroller.scrollTop *= ratio;
+				const ratio = 1 - ((scrollContainer.scrollTop / scrollContainer.scrollHeight) - oldTopPos);
+				scroller.scrollTop = scrollContainer.scrollHeight * ratio;
 			}
 		})
 			.catch((e) => console.error(`Change Zoom ${e}`));
