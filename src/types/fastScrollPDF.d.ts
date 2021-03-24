@@ -68,3 +68,5 @@ interface IPDFDocument {
 interface IFastScrollPDF extends IUsePDF {
 	className?: string
 }
+
+declare module "*.gif"
