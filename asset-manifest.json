@@ -1,22 +1,23 @@
 {
   "files": {
-    "main.css": "/pdf-viewer/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/pdf-viewer/static/js/main.b009d466.chunk.js",
-    "main.js.map": "/pdf-viewer/static/js/main.b009d466.chunk.js.map",
-    "runtime-main.js": "/pdf-viewer/static/js/runtime-main.a8fcbbcf.js",
-    "runtime-main.js.map": "/pdf-viewer/static/js/runtime-main.a8fcbbcf.js.map",
-    "static/js/2.a75a61fa.chunk.js": "/pdf-viewer/static/js/2.a75a61fa.chunk.js",
-    "static/js/2.a75a61fa.chunk.js.map": "/pdf-viewer/static/js/2.a75a61fa.chunk.js.map",
-    "index.html": "/pdf-viewer/index.html",
-    "precache-manifest.210c48337b06375d9ee3a19fbaea2efe.js": "/pdf-viewer/precache-manifest.210c48337b06375d9ee3a19fbaea2efe.js",
-    "service-worker.js": "/pdf-viewer/service-worker.js",
-    "static/css/main.5ecd60fb.chunk.css.map": "/pdf-viewer/static/css/main.5ecd60fb.chunk.css.map",
-    "static/js/2.a75a61fa.chunk.js.LICENSE.txt": "/pdf-viewer/static/js/2.a75a61fa.chunk.js.LICENSE.txt"
+    "main.css": "/react-fast-scroll-pdf/static/css/main.6dea0f05.chunk.css",
+    "main.js": "/react-fast-scroll-pdf/static/js/main.3e990e77.chunk.js",
+    "main.js.map": "/react-fast-scroll-pdf/static/js/main.3e990e77.chunk.js.map",
+    "runtime-main.js": "/react-fast-scroll-pdf/static/js/runtime-main.550198b0.js",
+    "runtime-main.js.map": "/react-fast-scroll-pdf/static/js/runtime-main.550198b0.js.map",
+    "static/js/2.9860d8ee.chunk.js": "/react-fast-scroll-pdf/static/js/2.9860d8ee.chunk.js",
+    "static/js/2.9860d8ee.chunk.js.map": "/react-fast-scroll-pdf/static/js/2.9860d8ee.chunk.js.map",
+    "static/js/3.921fe79f.chunk.js": "/react-fast-scroll-pdf/static/js/3.921fe79f.chunk.js",
+    "static/js/3.921fe79f.chunk.js.map": "/react-fast-scroll-pdf/static/js/3.921fe79f.chunk.js.map",
+    "index.html": "/react-fast-scroll-pdf/index.html",
+    "static/css/main.6dea0f05.chunk.css.map": "/react-fast-scroll-pdf/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.9860d8ee.chunk.js.LICENSE.txt": "/react-fast-scroll-pdf/static/js/2.9860d8ee.chunk.js.LICENSE.txt",
+    "static/js/3.921fe79f.chunk.js.LICENSE.txt": "/react-fast-scroll-pdf/static/js/3.921fe79f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.a8fcbbcf.js",
-    "static/js/2.a75a61fa.chunk.js",
-    "static/css/main.5ecd60fb.chunk.css",
-    "static/js/main.b009d466.chunk.js"
+    "static/js/runtime-main.550198b0.js",
+    "static/js/2.9860d8ee.chunk.js",
+    "static/css/main.6dea0f05.chunk.css",
+    "static/js/main.3e990e77.chunk.js"
   ]
 }

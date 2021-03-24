@@ -1,6 +1,6 @@
 {
-  "short_name": "pdf-viewer",
-  "name": "pdf-viewer",
+  "short_name": "react-fast-scroll-pdf",
+  "name": "react-fast-scroll-pdf",
   "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#000000",
