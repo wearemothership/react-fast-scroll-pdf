@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/react-fast-scroll-pdf/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/react-fast-scroll-pdf/static/js/main.0f17179f.chunk.js",
-    "main.js.map": "/react-fast-scroll-pdf/static/js/main.0f17179f.chunk.js.map",
+    "main.js": "/react-fast-scroll-pdf/static/js/main.8fe7d428.chunk.js",
+    "main.js.map": "/react-fast-scroll-pdf/static/js/main.8fe7d428.chunk.js.map",
     "runtime-main.js": "/react-fast-scroll-pdf/static/js/runtime-main.67bf23fc.js",
     "runtime-main.js.map": "/react-fast-scroll-pdf/static/js/runtime-main.67bf23fc.js.map",
     "static/js/2.8861239c.chunk.js": "/react-fast-scroll-pdf/static/js/2.8861239c.chunk.js",
@@ -18,6 +18,6 @@
     "static/js/runtime-main.67bf23fc.js",
     "static/js/2.8861239c.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.0f17179f.chunk.js"
+    "static/js/main.8fe7d428.chunk.js"
   ]
 }
