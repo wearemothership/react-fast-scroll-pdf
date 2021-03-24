@@ -164,8 +164,7 @@ const usePDF = ({
 
 			if (scrollContainer) {
 				const scroller = scrollContainer;
-				const ratio = 1 - ((scrollContainer.scrollTop / scrollContainer.scrollHeight) - oldTopPos);
-				scroller.scrollTop = scrollContainer.scrollHeight * ratio;
+				scroller.scrollTop = scrollContainer.scrollHeight * oldTopPos;
 			}
 		})
 			.catch((e) => console.error(`Change Zoom ${e}`));
