@@ -6,7 +6,7 @@
 
 # Background
 I needed a way to very quickly render a complete PDF document but without using a lot of canvas elements (iPads etc limit the amount of canvas memory). This uses a single canvas element 
-and uses pdfjs-dist to render each pdf page before converting it to a jpeg image. PDF annotations are then placed on top of the image so that links etc still work.
+and uses pdfjs-dist to render each pdf page before converting it to a PNG image. PDF annotations are then placed on top of the image so that links etc still work.
 
 ## Install
 ```bash
@@ -190,7 +190,7 @@ These two components can be accessed via an import and may be useful if you wish
 - source: (required) a PDFJS source object (see below)
 - loadingImage: (optional) an image that will be spun in the middle of loading pages (default: spinner gif - courtesy of <a href="https://icons8.com/" targe="_blank">icons8</a>).
 - spinLoadingImage: (optional) Whether to spin the loading image (default: false)
-- quality: (optional) jpeg image quality between 1 and 100. (default: 80)
+- quality: (optional) png image quality between 1 and 100. (default: 80)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true),
 - className: (optional) a CSS class to apply to the main window. (default: none)
 
@@ -220,14 +220,14 @@ These two components can be accessed via an import and may be useful if you wish
 - width: (required) the width of the page in px.
 - height: (required) the height of the page in px.
 - type: (optional) one of "place" or "canvas" for placeholder or image canvas.
-- loadingImage: (optional) an image src string to display in the centre of the loading page (jpeg, gif etc);
+- loadingImage: (optional) an image src string to display in the centre of the loading page (png, jpeg, gif etc);
 - spin: (optional) a boolean whether to spin the image (default: false)
 
 ### usePDF
 - source: (required) a PDFJS source object (see below)
 - loadingImage: (optional) an image that will be spun in the middle of loading pages (default: Font Awesome Spinner).
 - spinLoadingImage: (optional) Whether to spin the loading image (default: false)
-- quality: (optional) jpeg image quality between 1 and 100. (default: 80)
+- quality: (optional) png image quality between 1 and 100. (default: 80)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true)
 
 ## usePDF return
