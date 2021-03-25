@@ -38,7 +38,7 @@ const App = (): JSX.Element => {
 	};
 
 	const numQuality = parseInt(quality, 10);
-	const isValidQuality = !Number.isNaN(numQuality) && numQuality >= 1 && numQuality <= 100
+	const isValidQuality = !Number.isNaN(numQuality) && numQuality >= 1 && numQuality <= 100;
 
 	return (
 		<div className={styles.app}>
