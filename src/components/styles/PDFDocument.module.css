@@ -2,7 +2,7 @@
 	overflow-y: scroll;
 	overflow-x: hidden;
 	width: 100%;
-	height: calc(100vh - 70px);
+	flex: 1
 }
 
 .viewer {

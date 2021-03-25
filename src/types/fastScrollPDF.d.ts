@@ -22,17 +22,14 @@ interface IUsePDF {
 	loadingImage?: string,
 	spinLoadingImage?: boolean,
 	quality?: number,
-	enableAnnotations?: boolean
-}
-
-interface IChangeScale {
-	scale: number,
-	scrollContainer?: ReactNode,
+	enableAnnotations?: boolean,
 	viewer?: ReactNode,
+	scrollContainer?: ReactNode
 }
 
 type TUsePDF = {
-	changeZoom: ({ scale, viewer, scrollContainer }: IChangeScale) => void,
+	renderCurrentPage: (force?: boolean) => void,
+	changeZoom: ({ scale }: IChangeZoom) => void,
 	pages: (JSX.Element | undefined)[]
 }
 
@@ -45,9 +42,7 @@ interface IPDFJSLib {
 }
 
 interface IChangeZoom {
-	scale: number,
-	viewer?: ReactNode,
-	scrollContainer?: ReactNode
+	scale: number
 }
 
 interface IZoomButtons {

@@ -14,7 +14,13 @@ import PlaceholderPage from "../components/PlaceholderPage";
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
 const usePDF = ({
-	source, loadingImage, quality = 80, enableAnnotations = true, spinLoadingImage = false
+	source,
+	loadingImage,
+	quality = 80,
+	enableAnnotations = true,
+	spinLoadingImage = false,
+	scrollContainer,
+	viewer
 }: IUsePDF): TUsePDF => {
 	if (quality < 1 || quality > 100) {
 		throw new Error("The 'quality' prop must be between 1 and 100");
@@ -36,77 +42,86 @@ const usePDF = ({
 		if (!docLoaded.current) {
 			return;
 		}
-		pageRendering.current = true;
-		// Using promise to fetch the page
-		pdfDoc?.getPage(num).then((page: PDFPageProxy) => {
-			const viewport = page.getViewport({ scale: scaleRef.current });
-			pageCanvasRef.current.height = viewport.height;
-			pageCanvasRef.current.width = viewport.width;
-			const ctx = pageCanvasRef.current.getContext("2d") as CanvasRenderingContext2D;
 
-			// Render PDF page into canvas context
-			const renderContext = {
-				canvasContext: ctx,
-				viewport,
-				enableWebGL: true
-			};
+		if (pdfDoc) {
+			pageRendering.current = true;
+			pdfDoc.getPage(num).then((page: PDFPageProxy) => {
+				const viewport = page.getViewport({ scale: scaleRef.current });
+				pageCanvasRef.current.height = viewport.height;
+				pageCanvasRef.current.width = viewport.width;
+				const ctx = pageCanvasRef.current.getContext("2d") as CanvasRenderingContext2D;
 
-			const loadingTask = page.render(renderContext);
+				// Render PDF page into canvas context
+				const renderContext = {
+					canvasContext: ctx,
+					viewport,
+					enableWebGL: true
+				};
 
-			loadingTask.promise.then(() => page.getAnnotations())
-				.then((annotationData) => {
-					let annotationDiv: HTMLDivElement;
-					if (enableAnnotations) {
-						annotationDiv = document.createElement("div");
-						annotationDiv.id = `annot${num}`;
-						annotationDiv.className = "annotationLayer";
+				const loadingTask = page.render(renderContext);
 
-						pdfjsLib.current.AnnotationLayer.render({
-							viewport: viewport.clone({ dontFlip: true }),
-							div: annotationDiv,
-							annotations: annotationData,
-							page,
-							linkService
+				loadingTask.promise.then(() => page.getAnnotations())
+					.then((annotationData) => {
+						let annotationDiv: HTMLDivElement;
+						if (enableAnnotations) {
+							annotationDiv = document.createElement("div");
+							annotationDiv.id = `annot${num}`;
+							annotationDiv.className = "annotationLayer";
+
+							pdfjsLib.current.AnnotationLayer.render({
+								viewport: viewport.clone({ dontFlip: true }),
+								div: annotationDiv,
+								annotations: annotationData,
+								page,
+								linkService
+							});
+						}
+
+						setPages((oldPages) => {
+							const newPages = [...oldPages];
+							const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
+							newPages[num] = (
+								<PDFPage
+									pageNum={num}
+									width={width}
+									height={height}
+									imageSrc={pageCanvasRef.current.toDataURL("image/png")}
+									key={`page${num}`}
+								>
+									{ enableAnnotations ? <div /> : null}
+								</PDFPage>
+							);
+							return newPages;
 						});
-					}
-
-					setPages((oldPages) => {
-						const newPages = [...oldPages];
-						const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
-						newPages[num] = (
-							<PDFPage
-								pageNum={num}
-								width={width}
-								height={height}
-								imageSrc={pageCanvasRef.current.toDataURL("image/png", quality / 100)}
-								key={`page${num}`}
-							>
-								{ enableAnnotations ? <div /> : null}
-							</PDFPage>
-						);
-						return newPages;
+					})
+					.catch((e) => {
+						if (e.name !== "RenderingCancelledException") {
+							console.error(`Render Page: ${e}`);
+						}
+					})
+					.finally(() => {
+						pageRendering.current = false;
+						page.cleanup();
+						if (renderQueue.current.length > 0) {
+							// New page rendering is pending
+							const no = renderQueue.current.shift();
+							renderPage(no);
+						}
 					});
-				})
-				.catch((e) => {
-					if (e.name !== "RenderingCancelledException") {
-						console.error(`Render Page: ${e}`);
-					}
-				})
-				.finally(() => {
-					pageRendering.current = false;
-					page.cleanup();
-					if (renderQueue.current.length > 0) {
-						// New page rendering is pending
-						const no = renderQueue.current.shift();
-						renderPage(no);
-					}
-				});
-		});
-	}, [pdfDoc, linkService, quality, enableAnnotations]);
+			});
+		}
+	}, [pdfDoc, linkService, enableAnnotations]);
 
-	const queueRenderPage = useCallback((num: number) => {
+	const queueRenderPage = useCallback((num: number, jumpQueue = false) => {
 		if (pageRendering.current) {
-			if (!renderQueue.current.includes(num)) {
+			if (jumpQueue) {
+				const ind = renderQueue.current.indexOf(num);
+				if (ind >= 0) {
+					renderQueue.current.splice(ind, 1);
+				}
+				renderQueue.current.unshift(num);
+			}
+			else if (!renderQueue.current.includes(num)) {
 				renderQueue.current.push(num);
 			}
 		}
@@ -115,7 +130,23 @@ const usePDF = ({
 		}
 	}, [renderPage]);
 
-	const changeZoom = useCallback(({ scale, viewer, scrollContainer }: IChangeZoom) => {
+	const getCurrentPage = useCallback(() => {
+		let currPage = 1;
+		if (viewer && scrollContainer) {
+			const { children } = viewer ?? {};
+			for (let i = 0; i < children.length; i += 1) {
+				if (children[i].offsetTop <= scrollContainer.scrollTop + 33) {
+					currPage = i + 1;
+				}
+			}
+		}
+
+		return currPage;
+	}, [scrollContainer, viewer]);
+
+	const isPageRendered = useCallback((pageNo: number) => !!pages[pageNo]?.props.imageSrc, [pages]);
+
+	const changeZoom = useCallback(({ scale }: IChangeZoom) => {
 		renderQueue.current.length = 0;
 		scaleRef.current = scale;
 		const oldTopPos = scrollContainer?.scrollTop / scrollContainer?.scrollHeight;
@@ -124,15 +155,6 @@ const usePDF = ({
 			viewportRef.current = page.getViewport({ scale });
 			const { width, height } = viewportRef.current;
 			page.cleanup();
-			let currPage = 1;
-			if (viewer && scrollContainer) {
-				const { children } = viewer ?? {};
-				for (let i = 0; i < children.length; i += 1) {
-					if (children[i].offsetTop <= scrollContainer.scrollTop + 33) {
-						currPage = i + 1;
-					}
-				}
-			}
 			setPages((oldPages) => {
 				const newPages = oldPages.map((pg, index) => {
 					if (!pg) {
@@ -163,17 +185,25 @@ const usePDF = ({
 			const ratio = scaleChangeRef.current / oldHeight;
 			if (ratio < quality / 100) {
 				_.debounce(() => {
-					queueRenderPage(currPage);
+					const currPage = getCurrentPage();
 					if (currPage + 1 < pdfDoc.numPages) {
-						queueRenderPage(currPage + 1);
+						queueRenderPage(currPage + 1, true);
 					}
+					queueRenderPage(currPage, true);
 					for (let i = 1; i <= pdfDoc.numPages; i += 1) {
 						if (i !== currPage && i !== currPage + 1) {
 							queueRenderPage(i);
 						}
 					}
-				}, 500)();
+				}, 500, { maxWait: 500 })();
 				scaleChangeRef.current = viewportRef.current.height;
+			}
+			else {
+				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
+					if (!pages[i]?.props.imageSrc) {
+						queueRenderPage(i);
+					}
+				}
 			}
 
 			if (scrollContainer) {
@@ -182,7 +212,23 @@ const usePDF = ({
 			}
 		})
 			.catch((e) => console.error(`Change Zoom ${e}`));
-	}, [pdfDoc, quality, loadingImage, spinLoadingImage, queueRenderPage]);
+	}, [scrollContainer,
+		pdfDoc,
+		quality,
+		loadingImage,
+		spinLoadingImage,
+		getCurrentPage,
+		queueRenderPage,
+		pages
+	]);
+
+	const renderCurrentPage = useCallback((force = false) => {
+		const currPage = getCurrentPage();
+		if (!isPageRendered(currPage) || force) {
+			queueRenderPage(currPage + 1, true);
+			queueRenderPage(currPage, true);
+		}
+	}, [getCurrentPage, isPageRendered, queueRenderPage]);
 
 	useEffect(() => {
 		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
@@ -254,6 +300,7 @@ const usePDF = ({
 	}, []);
 
 	return {
+		renderCurrentPage,
 		changeZoom,
 		pages
 	};
