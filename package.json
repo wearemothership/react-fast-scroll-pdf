@@ -15,8 +15,8 @@
   "scripts": {
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
-    "build": "rm ./dist/* -r -f && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist",
-    "start": "rm ./dist/* -r -f && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist && rollup -c -w ",
+    "build": "rm -r -f ./dist/* && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist",
+    "start": "rm -r -f ./dist/* && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist && rollup -c -w ",
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
