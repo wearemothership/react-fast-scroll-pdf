@@ -1,6 +1,6 @@
 {
   "name": "react-fast-scroll-pdf",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Image-based PDF viewer using pdfjs",
   "author": "mothershipsoft",
   "license": "MIT",
