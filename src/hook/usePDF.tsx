@@ -30,7 +30,7 @@ const usePDF = ({
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
 	const docLoaded = useRef(false);
-	const scaleChangeRef = useRef<number>(0);
+	const scaleChangeRef = useRef<number>(100);
 
 	const renderPage = useCallback((num) => {
 		if (!docLoaded.current) {
@@ -160,10 +160,8 @@ const usePDF = ({
 				return newPages;
 			});
 
-			const ratio = viewportRef.current.height / oldHeight;
-			scaleChangeRef.current += Math.round((ratio < 1 ? 1 - ratio : ratio - 1) * 100);
-
-			if (scaleChangeRef.current > 10) {
+			const ratio = scaleChangeRef.current / oldHeight;
+			if (ratio < quality / 100) {
 				_.debounce(() => {
 					queueRenderPage(currPage);
 					if (currPage + 1 < pdfDoc.numPages) {
@@ -175,7 +173,7 @@ const usePDF = ({
 						}
 					}
 				}, 500)();
-				scaleChangeRef.current = 0;
+				scaleChangeRef.current = viewportRef.current.height;
 			}
 
 			if (scrollContainer) {
@@ -184,7 +182,7 @@ const usePDF = ({
 			}
 		})
 			.catch((e) => console.error(`Change Zoom ${e}`));
-	}, [pdfDoc, queueRenderPage, loadingImage, spinLoadingImage]);
+	}, [pdfDoc, quality, loadingImage, spinLoadingImage, queueRenderPage]);
 
 	useEffect(() => {
 		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
@@ -220,6 +218,7 @@ const usePDF = ({
 		if (pdfDoc && docLoaded.current) {
 			pdfDoc.getPage(1).then((page) => {
 				viewportRef.current = page.getViewport({ scale: scaleRef.current });
+				scaleChangeRef.current = viewportRef.current.height;
 				page.cleanup();
 				setPages((oldPages) => {
 					const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
