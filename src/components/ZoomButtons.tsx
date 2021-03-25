@@ -7,16 +7,16 @@ const ZoomButtons = ({
 	const [zoom, setZoom] = useState(zoomStart ?? 1);
 
 	const zoomIn = () => {
-		const newZoom = zoom + zoomStep;
-		if (newZoom < maxZoom) {
+		const newZoom = Math.round((zoom + zoomStep) * 100) / 100;
+		if (newZoom <= maxZoom) {
 			setZoom(newZoom);
 			zoomChange(newZoom);
 		}
 	};
 
 	const zoomOut = () => {
-		const newZoom = zoom - zoomStep;
-		if (newZoom > minZoom) {
+		const newZoom = Math.round((zoom - zoomStep) * 100) / 100;
+		if (newZoom >= minZoom) {
 			setZoom(newZoom);
 			zoomChange(newZoom);
 		}
@@ -24,8 +24,8 @@ const ZoomButtons = ({
 
 	return (
 		<div className={styles.buttonGroup}>
-			<button type="button" id="btnZoomIn" className={[className, styles.zoomButton].join(" ")} onClick={() => zoomIn()}>+</button>
-			<button type="button" id="btnZoomIn" className={[className, styles.zoomButton].join(" ")} onClick={() => zoomOut()}>-</button>
+			<button type="button" id="btnZoomIn" className={[className, styles.zoomButton].join(" ")} disabled={zoom >= maxZoom} onClick={() => zoomIn()}>+</button>
+			<button type="button" id="btnZoomOut" className={[className, styles.zoomButton].join(" ")} disabled={zoom <= minZoom} onClick={() => zoomOut()}>-</button>
 		</div>
 	);
 };
