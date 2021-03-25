@@ -30,6 +30,7 @@ const usePDF = ({
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
 	const docLoaded = useRef(false);
+	const scaleChangeRef = useRef<number>(0);
 
 	const renderPage = useCallback((num) => {
 		if (!docLoaded.current) {
@@ -118,6 +119,7 @@ const usePDF = ({
 		renderQueue.current.length = 0;
 		scaleRef.current = scale;
 		const oldTopPos = scrollContainer?.scrollTop / scrollContainer?.scrollHeight;
+		const oldHeight = viewportRef.current?.height ?? 300;
 		pdfDoc?.getPage(1).then((page) => {
 			viewportRef.current = page.getViewport({ scale });
 			const { width, height } = viewportRef.current;
@@ -158,14 +160,22 @@ const usePDF = ({
 				return newPages;
 			});
 
-			queueRenderPage(currPage);
-			if (currPage + 1 < pdfDoc.numPages) {
-				queueRenderPage(currPage + 1);
-			}
-			for (let i = 1; i <= pdfDoc.numPages; i += 1) {
-				if (i !== currPage && i !== currPage + 1) {
-					queueRenderPage(i);
-				}
+			const ratio = viewportRef.current.height / oldHeight;
+			scaleChangeRef.current += Math.round((ratio < 1 ? 1 - ratio : ratio - 1) * 100);
+
+			if (scaleChangeRef.current > 10) {
+				_.debounce(() => {
+					queueRenderPage(currPage);
+					if (currPage + 1 < pdfDoc.numPages) {
+						queueRenderPage(currPage + 1);
+					}
+					for (let i = 1; i <= pdfDoc.numPages; i += 1) {
+						if (i !== currPage && i !== currPage + 1) {
+							queueRenderPage(i);
+						}
+					}
+				}, 500)();
+				scaleChangeRef.current = 0;
 			}
 
 			if (scrollContainer) {
