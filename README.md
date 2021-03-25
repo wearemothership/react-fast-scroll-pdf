@@ -189,6 +189,7 @@ These two components can be accessed via an import and may be useful if you wish
 ### FastScrollPDF
 - source: (required) a PDFJS source object (see below)
 - loadingImage: (optional) an image that will be spun in the middle of loading pages (default: spinner gif - courtesy of <a href="https://icons8.com/" targe="_blank">icons8</a>).
+- spinLoadingImage: (optional) Whether to spin the loading image (default: false)
 - quality: (optional) jpeg image quality between 1 and 100. (default: 80)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true),
 - className: (optional) a CSS class to apply to the main window. (default: none)
@@ -225,6 +226,7 @@ These two components can be accessed via an import and may be useful if you wish
 ### usePDF
 - source: (required) a PDFJS source object (see below)
 - loadingImage: (optional) an image that will be spun in the middle of loading pages (default: Font Awesome Spinner).
+- spinLoadingImage: (optional) Whether to spin the loading image (default: false)
 - quality: (optional) jpeg image quality between 1 and 100. (default: 80)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true)
 

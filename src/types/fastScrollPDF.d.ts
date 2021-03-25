@@ -20,6 +20,7 @@ interface IPDFPage extends IPage {
 interface IUsePDF {
 	source: DocumentInitParameters,
 	loadingImage?: string,
+	spinLoadingImage?: boolean,
 	quality?: number,
 	enableAnnotations?: boolean
 }

@@ -14,7 +14,7 @@ import PlaceholderPage from "../components/PlaceholderPage";
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
 const usePDF = ({
-	source, loadingImage, quality = 80, enableAnnotations = true
+	source, loadingImage, quality = 80, enableAnnotations = true, spinLoadingImage = false
 }: IUsePDF): TUsePDF => {
 	if (quality < 1 || quality > 100) {
 		throw new Error("The 'quality' prop must be between 1 and 100");
@@ -77,7 +77,7 @@ const usePDF = ({
 								pageNum={num}
 								width={width}
 								height={height}
-								imageSrc={pageCanvasRef.current.toDataURL("image/jpeg", quality / 100)}
+								imageSrc={pageCanvasRef.current.toDataURL("image/png", quality / 100)}
 								key={`page${num}`}
 							>
 								{ enableAnnotations ? <div /> : null}
@@ -146,7 +146,13 @@ const usePDF = ({
 						);
 					}
 					return (
-						<PlaceholderPage key={key} width={width} height={height} loadingImage={loadingImage} />
+						<PlaceholderPage
+							key={key}
+							width={width}
+							height={height}
+							loadingImage={loadingImage}
+							spin={spinLoadingImage}
+						/>
 					);
 				});
 				return newPages;
@@ -168,7 +174,7 @@ const usePDF = ({
 			}
 		})
 			.catch((e) => console.error(`Change Zoom ${e}`));
-	}, [pdfDoc, queueRenderPage, loadingImage]);
+	}, [pdfDoc, queueRenderPage, loadingImage, spinLoadingImage]);
 
 	useEffect(() => {
 		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
@@ -210,7 +216,15 @@ const usePDF = ({
 					const { numPages } = pdfDoc;
 					const newPages = [...oldPages];
 					for (let i = 1; i <= numPages; i += 1) {
-						newPages[i] = <PlaceholderPage key={`page${i}`} width={width} height={height} loadingImage={loadingImage} />;
+						newPages[i] = (
+							<PlaceholderPage
+								key={`page${i}`}
+								width={width}
+								height={height}
+								loadingImage={loadingImage}
+								spin={spinLoadingImage}
+							/>
+						);
 					}
 					return newPages;
 				});
@@ -221,7 +235,7 @@ const usePDF = ({
 			})
 				.catch((e) => console.error(`UseEffect (pdfDoc, queueRenderPage, loadingImage) ${e}`));
 		}
-	}, [pdfDoc, queueRenderPage, loadingImage]);
+	}, [pdfDoc, queueRenderPage, loadingImage, spinLoadingImage]);
 
 	useEffect(() => () => {
 		docLoaded.current = false;

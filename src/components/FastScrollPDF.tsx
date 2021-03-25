@@ -5,7 +5,7 @@ import usePDF from "../hook/usePDF";
 import styles from "./styles/FastScrollPDF.module.css";
 
 const FastScrollPDF = ({
-	source, loadingImage, quality, enableAnnotations, className
+	source, loadingImage, quality, enableAnnotations, className, spinLoadingImage
 }: IFastScrollPDF): JSX.Element => {
 	const scrollContainerRef = useRef();
 	const viewerRef = useRef();
@@ -13,7 +13,8 @@ const FastScrollPDF = ({
 		source,
 		loadingImage,
 		quality,
-		enableAnnotations
+		enableAnnotations,
+		spinLoadingImage
 	});
 
 	const zoomChange = (newZoom: number) => {
