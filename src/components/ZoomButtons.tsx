@@ -4,18 +4,23 @@ import styles from "./styles/ZoomButtons.module.css";
 const ZoomButtons = ({
 	zoomChangeStart,
 	zoomChangeEnd,
-	zoomStep = 0.0025,
+	zoomStep = 0.005,
 	zoomStart = 1,
 	minZoom = 0.1,
 	maxZoom = 5,
 	className
 }: IZoomButtons): JSX.Element => {
 	const zoomInterval = useRef<NodeJS.Timeout>();
+	const aniFrameRef = useRef<number>();
 	const zoomRef = useRef<number>(zoomStart ?? 1);
 
 	const zoomEnd = () => {
 		if (zoomInterval.current) {
 			zoomChangeEnd();
+			if (aniFrameRef.current) {
+				window.cancelAnimationFrame(aniFrameRef.current);
+				aniFrameRef.current = undefined;
+			}
 			clearInterval(zoomInterval.current);
 			zoomInterval.current = undefined;
 		}
@@ -24,14 +29,20 @@ const ZoomButtons = ({
 	const zoomInStart = () => {
 		if (!zoomInterval.current) {
 			zoomInterval.current = setInterval(() => {
-				const step = ((zoomRef.current / maxZoom) * zoomStep) * 10;
-				zoomRef.current = Math.round((zoomRef.current + step) * 10000) / 10000;
-				if (zoomRef.current <= maxZoom) {
-					zoomChangeStart(zoomRef.current);
+				if (aniFrameRef.current) {
+					window.cancelAnimationFrame(aniFrameRef.current);
+					aniFrameRef.current = undefined;
 				}
-				else {
-					zoomEnd();
-				}
+				aniFrameRef.current = window.requestAnimationFrame(() => {
+					const step = ((zoomRef.current / maxZoom) * zoomStep) * 10;
+					zoomRef.current = Math.round((zoomRef.current + step) * 10000) / 10000;
+					if (zoomRef.current <= maxZoom) {
+						zoomChangeStart(zoomRef.current);
+					}
+					else {
+						zoomEnd();
+					}
+				});
 			}, 25);
 		}
 	};
@@ -39,14 +50,20 @@ const ZoomButtons = ({
 	const zoomOutStart = () => {
 		if (!zoomInterval.current) {
 			zoomInterval.current = setInterval(() => {
-				const step = ((zoomRef.current / maxZoom) * zoomStep) * 10;
-				zoomRef.current = Math.round((zoomRef.current - step) * 10000) / 10000;
-				if (zoomRef.current >= minZoom) {
-					zoomChangeStart(zoomRef.current);
+				if (aniFrameRef.current) {
+					window.cancelAnimationFrame(aniFrameRef.current);
+					aniFrameRef.current = undefined;
 				}
-				else {
-					zoomEnd();
-				}
+				window.requestAnimationFrame(() => {
+					const step = ((zoomRef.current / maxZoom) * zoomStep) * 10;
+					zoomRef.current = Math.round((zoomRef.current - step) * 10000) / 10000;
+					if (zoomRef.current >= minZoom) {
+						zoomChangeStart(zoomRef.current);
+					}
+					else {
+						zoomEnd();
+					}
+				});
 			}, 25);
 		}
 	};
