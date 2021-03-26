@@ -21,7 +21,6 @@ interface IUsePDF {
 	source: DocumentInitParameters,
 	loadingImage?: string,
 	spinLoadingImage?: boolean,
-	quality?: number,
 	enableAnnotations?: boolean,
 	viewer?: ReactNode,
 	scrollContainer?: ReactNode
@@ -29,7 +28,9 @@ interface IUsePDF {
 
 type TUsePDF = {
 	renderCurrentPage: (force?: boolean) => void,
-	changeZoom: ({ scale }: IChangeZoom) => void,
+	changeZoom: (scale: number) => void,
+	changeZoomStart: (scale: number) => void,
+	changeZoomEnd: () => void,
 	pages: (JSX.Element | undefined)[]
 }
 
@@ -41,12 +42,9 @@ interface IPDFJSLib {
 	getDocument: getDocument
 }
 
-interface IChangeZoom {
-	scale: number
-}
-
 interface IZoomButtons {
-	zoomChange: (zoom: number) => void,
+	zoomChangeStart: (zoom: number) => void,
+	zoomChangeEnd: () => void,
 	zoomStep?: number,
 	zoomStart?: number,
 	minZoom?: number,
@@ -62,6 +60,7 @@ interface IPDFDocument {
 }
 
 interface IFastScrollPDF extends IUsePDF {
+	hideZoom?: boolean
 	className?: string
 }
 

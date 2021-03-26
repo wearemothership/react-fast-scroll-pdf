@@ -16,15 +16,11 @@ const CMAP_URL = "pdfjs-dist/cmaps/";
 const usePDF = ({
 	source,
 	loadingImage,
-	quality = 80,
 	enableAnnotations = true,
 	spinLoadingImage = false,
 	scrollContainer,
 	viewer
 }: IUsePDF): TUsePDF => {
-	if (quality < 1 || quality > 100) {
-		throw new Error("The 'quality' prop must be between 1 and 100");
-	}
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
 	const [pages, setPages] = useState<(JSX.Element | undefined)[]>([]);
 	const scaleRef = useRef(1);
@@ -36,7 +32,7 @@ const usePDF = ({
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
 	const docLoaded = useRef(false);
-	const scaleChangeRef = useRef<number>(100);
+	const oldHeightRef = useRef<number>();
 
 	const renderPage = useCallback((num) => {
 		if (!docLoaded.current) {
@@ -46,7 +42,7 @@ const usePDF = ({
 		if (pdfDoc) {
 			pageRendering.current = true;
 			pdfDoc.getPage(num).then((page: PDFPageProxy) => {
-				const viewport = page.getViewport({ scale: scaleRef.current });
+				const viewport = page.getViewport({ scale: scaleRef.current * 0.5 });
 				pageCanvasRef.current.height = viewport.height;
 				pageCanvasRef.current.width = viewport.width;
 				const ctx = pageCanvasRef.current.getContext("2d") as CanvasRenderingContext2D;
@@ -146,11 +142,13 @@ const usePDF = ({
 
 	const isPageRendered = useCallback((pageNo: number) => !!pages[pageNo]?.props.imageSrc, [pages]);
 
-	const changeZoom = useCallback(({ scale }: IChangeZoom) => {
-		renderQueue.current.length = 0;
+	const changeZoomStart = useCallback((scale: number) => {
 		scaleRef.current = scale;
+		renderQueue.current.length = 0;
 		const oldTopPos = scrollContainer?.scrollTop / scrollContainer?.scrollHeight;
-		const oldHeight = viewportRef.current?.height ?? 300;
+		if (!oldHeightRef.current) {
+			oldHeightRef.current = viewportRef.current?.height ?? 300;
+		}
 		pdfDoc?.getPage(1).then((page) => {
 			viewportRef.current = page.getViewport({ scale });
 			const { width, height } = viewportRef.current;
@@ -182,30 +180,6 @@ const usePDF = ({
 				return newPages;
 			});
 
-			const ratio = scaleChangeRef.current / oldHeight;
-			if (ratio < quality / 100) {
-				_.debounce(() => {
-					const currPage = getCurrentPage();
-					if (currPage + 1 < pdfDoc.numPages) {
-						queueRenderPage(currPage + 1, true);
-					}
-					queueRenderPage(currPage, true);
-					for (let i = 1; i <= pdfDoc.numPages; i += 1) {
-						if (i !== currPage && i !== currPage + 1) {
-							queueRenderPage(i);
-						}
-					}
-				}, 500, { maxWait: 500 })();
-				scaleChangeRef.current = viewportRef.current.height;
-			}
-			else {
-				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
-					if (!pages[i]?.props.imageSrc) {
-						queueRenderPage(i);
-					}
-				}
-			}
-
 			if (scrollContainer) {
 				const scroller = scrollContainer;
 				scroller.scrollTop = scrollContainer.scrollHeight * oldTopPos;
@@ -214,13 +188,40 @@ const usePDF = ({
 			.catch((e) => console.error(`Change Zoom ${e}`));
 	}, [scrollContainer,
 		pdfDoc,
-		quality,
 		loadingImage,
 		spinLoadingImage,
-		getCurrentPage,
-		queueRenderPage,
-		pages
 	]);
+
+	const changeZoomEnd = useCallback(() => {
+		if (pdfDoc) {
+			const ratio = (viewportRef.current?.height ?? 400) / (oldHeightRef.current ?? 600);
+			oldHeightRef.current = undefined;
+			if (ratio > 1.2) {
+				const currPage = getCurrentPage();
+				queueRenderPage(currPage);
+				if (currPage + 1 < pdfDoc.numPages) {
+					queueRenderPage(currPage + 1);
+				}
+				for (let i = 1; i <= pdfDoc.numPages ?? 0; i += 1) {
+					if (i !== currPage && i !== currPage + 1) {
+						queueRenderPage(i);
+					}
+				}
+			}
+			else {
+				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
+					if (!pages[i]?.props.imageSrc) {
+						queueRenderPage(i);
+					}
+				}
+			}
+		}
+	}, [getCurrentPage, pages, pdfDoc, queueRenderPage]);
+
+	const changeZoom = useCallback((scale: number) => {
+		changeZoomStart(scale);
+		changeZoomEnd();
+	}, [changeZoomEnd, changeZoomStart]);
 
 	const renderCurrentPage = useCallback((force = false) => {
 		const currPage = getCurrentPage();
@@ -264,7 +265,6 @@ const usePDF = ({
 		if (pdfDoc && docLoaded.current) {
 			pdfDoc.getPage(1).then((page) => {
 				viewportRef.current = page.getViewport({ scale: scaleRef.current });
-				scaleChangeRef.current = viewportRef.current.height;
 				page.cleanup();
 				setPages((oldPages) => {
 					const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
@@ -299,11 +299,13 @@ const usePDF = ({
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	return {
+	return useMemo(() => ({
 		renderCurrentPage,
 		changeZoom,
+		changeZoomStart,
+		changeZoomEnd,
 		pages
-	};
+	}), [changeZoom, changeZoomEnd, changeZoomStart, pages, renderCurrentPage]);
 };
 
 export default usePDF;

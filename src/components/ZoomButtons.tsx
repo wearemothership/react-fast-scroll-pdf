@@ -1,31 +1,60 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import styles from "./styles/ZoomButtons.module.css";
 
 const ZoomButtons = ({
-	zoomChange, zoomStep = 0.1, zoomStart = 1, minZoom = 0.1, maxZoom = 3, className
+	zoomChangeStart,
+	zoomChangeEnd,
+	zoomStep = 0.0025,
+	zoomStart = 1,
+	minZoom = 0.1,
+	maxZoom = 5,
+	className
 }: IZoomButtons): JSX.Element => {
-	const [zoom, setZoom] = useState(zoomStart ?? 1);
+	const zoomInterval = useRef<NodeJS.Timeout>();
+	const zoomRef = useRef<number>(zoomStart ?? 1);
 
-	const zoomIn = () => {
-		const newZoom = Math.round((zoom + zoomStep) * 100) / 100;
-		if (newZoom <= maxZoom) {
-			setZoom(newZoom);
-			zoomChange(newZoom);
+	const zoomEnd = () => {
+		if (zoomInterval.current) {
+			zoomChangeEnd();
+			clearInterval(zoomInterval.current);
+			zoomInterval.current = undefined;
 		}
 	};
 
-	const zoomOut = () => {
-		const newZoom = Math.round((zoom - zoomStep) * 100) / 100;
-		if (newZoom >= minZoom) {
-			setZoom(newZoom);
-			zoomChange(newZoom);
+	const zoomInStart = () => {
+		if (!zoomInterval.current) {
+			zoomInterval.current = setInterval(() => {
+				const step = ((zoomRef.current / maxZoom) * zoomStep) * 10;
+				zoomRef.current = Math.round((zoomRef.current + step) * 10000) / 10000;
+				if (zoomRef.current <= maxZoom) {
+					zoomChangeStart(zoomRef.current);
+				}
+				else {
+					zoomEnd();
+				}
+			}, 25);
+		}
+	};
+
+	const zoomOutStart = () => {
+		if (!zoomInterval.current) {
+			zoomInterval.current = setInterval(() => {
+				const step = ((zoomRef.current / maxZoom) * zoomStep) * 10;
+				zoomRef.current = Math.round((zoomRef.current - step) * 10000) / 10000;
+				if (zoomRef.current >= minZoom) {
+					zoomChangeStart(zoomRef.current);
+				}
+				else {
+					zoomEnd();
+				}
+			}, 25);
 		}
 	};
 
 	return (
 		<div className={styles.buttonGroup}>
-			<button type="button" id="btnZoomIn" className={[className, styles.zoomButton].join(" ")} disabled={zoom >= maxZoom} onClick={() => zoomIn()}>+</button>
-			<button type="button" id="btnZoomOut" className={[className, styles.zoomButton].join(" ")} disabled={zoom <= minZoom} onClick={() => zoomOut()}>-</button>
+			<button type="button" id="btnZoomIn" className={[className, styles.zoomButton].join(" ")} disabled={zoomRef.current >= maxZoom} onMouseDown={zoomInStart} onMouseUp={zoomEnd}>+</button>
+			<button type="button" id="btnZoomOut" className={[className, styles.zoomButton].join(" ")} disabled={zoomRef.current <= minZoom} onMouseDown={zoomOutStart} onMouseUp={zoomEnd}>-</button>
 		</div>
 	);
 };

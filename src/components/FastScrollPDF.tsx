@@ -6,23 +6,20 @@ import usePDF from "../hook/usePDF";
 import styles from "./styles/FastScrollPDF.module.css";
 
 const FastScrollPDF = ({
-	source, loadingImage, quality, enableAnnotations, className, spinLoadingImage
+	source, loadingImage, enableAnnotations, className, spinLoadingImage, hideZoom = false
 }: IFastScrollPDF): JSX.Element => {
 	const scrollContainerRef = useRef<HTMLDivElement>();
 	const viewerRef = useRef<HTMLDivElement>();
-	const { pages, changeZoom, renderCurrentPage } = usePDF({
+	const {
+		pages, changeZoomStart, changeZoomEnd, renderCurrentPage
+	} = usePDF({
 		source,
 		loadingImage,
-		quality,
 		enableAnnotations,
 		spinLoadingImage,
 		scrollContainer: scrollContainerRef.current,
 		viewer: viewerRef.current
 	});
-
-	const zoomChange = (newZoom: number) => {
-		changeZoom({ scale: newZoom });
-	};
 
 	const scrollDocument = _.debounce(() => renderCurrentPage(), 500, { maxWait: 500 });
 
@@ -35,7 +32,14 @@ const FastScrollPDF = ({
 
 	return (
 		<div className={[className, styles.fastScrollPDF].join(" ")}>
-			<ZoomButtons zoomChange={zoomChange} />
+			{ hideZoom
+				? null
+				: (
+					<ZoomButtons
+						zoomChangeStart={(zoom: number) => changeZoomStart(zoom)}
+						zoomChangeEnd={() => changeZoomEnd()}
+					/>
+				)}
 			<PDFDocument scrollContainerRef={scrollContainerRef} viewerRef={viewerRef} pages={pages} />
 		</div>
 	);
