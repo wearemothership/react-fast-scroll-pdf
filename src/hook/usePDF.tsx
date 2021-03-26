@@ -42,7 +42,7 @@ const usePDF = ({
 		if (pdfDoc) {
 			pageRendering.current = true;
 			pdfDoc.getPage(num).then((page: PDFPageProxy) => {
-				const viewport = page.getViewport({ scale: scaleRef.current * 0.5 });
+				const viewport = page.getViewport({ scale: scaleRef.current });
 				pageCanvasRef.current.height = viewport.height;
 				pageCanvasRef.current.width = viewport.width;
 				const ctx = pageCanvasRef.current.getContext("2d") as CanvasRenderingContext2D;
