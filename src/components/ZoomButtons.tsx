@@ -14,6 +14,36 @@ interface IZoomState {
 	lastTimestamp: number
 }
 
+interface IZoomButton {
+	style: string
+	disabled: boolean
+	start: () => void
+	end: () => void
+	children: JSX.Element
+}
+
+const ZoomButton = ({
+	style,
+	disabled,
+	start,
+	end,
+	children
+}:IZoomButton): JSX.Element => (
+	<button
+		type="button"
+		className={style}
+		disabled={disabled}
+		onTouchStart={start}
+		onTouchCancel={end}
+		onTouchEnd={end}
+		onMouseDown={start}
+		onMouseLeave={end}
+		onMouseUp={end}
+	>
+		{ children }
+	</button>
+);
+
 const ZoomButtons = ({
 	zoomChangeStart,
 	zoomChangeEnd,
@@ -99,8 +129,22 @@ const ZoomButtons = ({
 
 	return (
 		<div className={styles.buttonGroup}>
-			<button type="button" id="btnZoomIn" className={style} disabled={zoomPos >= maxZoom} onMouseDown={zoomInStart} onMouseLeave={zoomEnd} onMouseUp={zoomEnd}>+</button>
-			<button type="button" id="btnZoomOut" className={style} disabled={zoomPos <= minZoom} onMouseDown={zoomOutStart} onMouseLeave={zoomEnd} onMouseUp={zoomEnd}>-</button>
+			<ZoomButton
+				style={style}
+				disabled={zoomPos >= maxZoom}
+				start={zoomInStart}
+				end={zoomEnd}
+			>
+				<b>+</b>
+			</ZoomButton>
+			<ZoomButton
+				style={style}
+				disabled={zoomPos <= minZoom}
+				start={zoomOutStart}
+				end={zoomEnd}
+			>
+				<b>-</b>
+			</ZoomButton>
 		</div>
 	);
 };
