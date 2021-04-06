@@ -23,6 +23,7 @@ const usePDF = ({
 }: IUsePDF): TUsePDF => {
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
 	const [pages, setPages] = useState<(JSX.Element | undefined)[]>([]);
+	const pagesRef = useRef<JSX.Element[]>([]);
 	const scaleRef = useRef(1);
 	const prevSource = useRef();
 	const viewportRef = useRef<PageViewport>();
@@ -33,6 +34,7 @@ const usePDF = ({
 	const pageRendering = useRef(false);
 	const docLoaded = useRef(false);
 	const oldHeightRef = useRef<number>();
+	const processQueueRef = useRef<_.DebouncedFunc<() => void> | null>(null);
 
 	const renderPage = useCallback((num) => {
 		if (!docLoaded.current) {
@@ -42,6 +44,11 @@ const usePDF = ({
 		if (pdfDoc) {
 			pageRendering.current = true;
 			pdfDoc.getPage(num).then((page: PDFPageProxy) => {
+				// kill the render early if Q cleared
+				if 	(renderQueue.current.length === 0) {
+					pageRendering.current = false;
+					return null;
+				}
 				const viewport = page.getViewport({ scale: scaleRef.current });
 				pageCanvasRef.current.height = viewport.height;
 				pageCanvasRef.current.width = viewport.width;
@@ -56,40 +63,47 @@ const usePDF = ({
 
 				const loadingTask = page.render(renderContext);
 
-				loadingTask.promise.then(() => page.getAnnotations())
-					.then((annotationData) => {
-						let annotationDiv: HTMLDivElement;
-						if (enableAnnotations) {
-							annotationDiv = document.createElement("div");
-							annotationDiv.id = `annot${num}`;
-							annotationDiv.className = "annotationLayer";
+				return loadingTask.promise.then(() => {
+					if (renderQueue.current.length === 0) {
+						return null;
+					}
+					return page.getAnnotations();
+				}).then((annotationData) => {
+					// kill the render early
+					if (renderQueue.current.length === 0) {
+						return null;
+					}
+					let annotationDiv: HTMLDivElement;
+					if (enableAnnotations) {
+						annotationDiv = document.createElement("div");
+						annotationDiv.id = `annot${num}`;
+						annotationDiv.className = "annotationLayer";
 
-							pdfjsLib.current.AnnotationLayer.render({
-								viewport: viewport.clone({ dontFlip: true }),
-								div: annotationDiv,
-								annotations: annotationData,
-								page,
-								linkService
-							});
-						}
-
-						setPages((oldPages) => {
-							const newPages = [...oldPages];
-							const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
-							newPages[num] = (
-								<PDFPage
-									pageNum={num}
-									width={width}
-									height={height}
-									imageSrc={pageCanvasRef.current.toDataURL("image/png")}
-									key={`page${num}`}
-								>
-									{ enableAnnotations ? <div /> : null}
-								</PDFPage>
-							);
-							return newPages;
+						pdfjsLib.current.AnnotationLayer.render({
+							viewport: viewport.clone({ dontFlip: true }),
+							div: annotationDiv,
+							annotations: annotationData,
+							page,
+							linkService
 						});
-					})
+					}
+
+					const newPages = [...pagesRef.current];
+					const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
+					newPages[num] = (
+						<PDFPage
+							pageNum={num}
+							width={width}
+							height={height}
+							imageSrc={pageCanvasRef.current.toDataURL("image/png")}
+							key={`page${num}`}
+						>
+							{ enableAnnotations ? <div /> : null}
+						</PDFPage>
+					);
+					pagesRef.current = newPages;
+					return setPages(newPages);
+				})
 					.catch((e) => {
 						if (e.name !== "RenderingCancelledException") {
 							console.error(`Render Page: ${e}`);
@@ -98,33 +112,46 @@ const usePDF = ({
 					.finally(() => {
 						pageRendering.current = false;
 						page.cleanup();
+						renderQueue.current = renderQueue.current.filter((p) => p !== num);
 						if (renderQueue.current.length > 0) {
 							// New page rendering is pending
 							const no = renderQueue.current.shift();
 							renderPage(no);
 						}
 					});
+			}).catch((err) => {
+				console.error(err);
+				pageRendering.current = false;
 			});
 		}
 	}, [pdfDoc, linkService, enableAnnotations]);
 
-	const queueRenderPage = useCallback((num: number, jumpQueue = false) => {
-		if (pageRendering.current) {
-			if (jumpQueue) {
-				const ind = renderQueue.current.indexOf(num);
-				if (ind >= 0) {
-					renderQueue.current.splice(ind, 1);
+	const processQueue = useCallback(() => {
+		if (!processQueueRef.current) {
+			processQueueRef.current = _.debounce(() => {
+				const page = renderQueue.current[0];
+				if (page && !pageRendering.current) {
+					renderPage(page);
 				}
-				renderQueue.current.unshift(num);
-			}
-			else if (!renderQueue.current.includes(num)) {
-				renderQueue.current.push(num);
-			}
+			}, 100);
 		}
-		else {
-			renderPage(num);
+		processQueueRef.current();
+	}, [renderPage, renderQueue, pageRendering]);
+
+	const queueRenderPage = useCallback((num: number, jumpQueue = false) => {
+		if (jumpQueue) {
+			const ind = renderQueue.current.indexOf(num);
+			if (ind >= 0) {
+				renderQueue.current.splice(ind, 1);
+			}
+			renderQueue.current.unshift(num);
 		}
-	}, [renderPage]);
+		else if (!renderQueue.current.includes(num)) {
+			renderQueue.current.push(num);
+		}
+		// _.debounce(processQueue, 300);
+		processQueue();
+	}, [processQueue]);
 
 	const getCurrentPage = useCallback(() => {
 		let currPage = 1;
@@ -140,9 +167,11 @@ const usePDF = ({
 		return currPage;
 	}, [scrollContainer, viewer]);
 
-	const isPageRendered = useCallback((pageNo: number) => !!pages[pageNo]?.props.imageSrc, [pages]);
+	const isPageRendered = useCallback((pageNo: number) => (
+		!!pagesRef.current[pageNo]?.props.imageSrc), [pagesRef]);
 
 	const changeZoomStart = useCallback((scale: number) => {
+		processQueueRef.current?.cancel();
 		scaleRef.current = scale;
 		renderQueue.current.length = 0;
 		const oldTopPos = scrollContainer?.scrollTop / scrollContainer?.scrollHeight;
@@ -153,32 +182,32 @@ const usePDF = ({
 			viewportRef.current = page.getViewport({ scale });
 			const { width, height } = viewportRef.current;
 			page.cleanup();
-			setPages((oldPages) => {
-				const newPages = oldPages.map((pg, index) => {
-					if (!pg) {
-						return undefined;
-					}
-					const { imageSrc, children } = pg.props;
-					const key = `page${index}`;
-					if (imageSrc) {
-						return (
-							<PDFPage key={key} pageNum={index} width={width} height={height} imageSrc={imageSrc}>
-								{ children }
-							</PDFPage>
-						);
-					}
+			const newPages = pagesRef.current.map((pg, index) => {
+				if (!pg) {
+					return undefined;
+				}
+				const { imageSrc, children } = pg.props;
+				const key = `page${index}`;
+				if (imageSrc) {
 					return (
-						<PlaceholderPage
-							key={key}
-							width={width}
-							height={height}
-							loadingImage={loadingImage}
-							spin={spinLoadingImage}
-						/>
+						<PDFPage key={key} pageNum={index} width={width} height={height} imageSrc={imageSrc}>
+							{ children }
+						</PDFPage>
 					);
-				});
-				return newPages;
+				}
+				return (
+					<PlaceholderPage
+						key={key}
+						width={width}
+						height={height}
+						loadingImage={loadingImage}
+						spin={spinLoadingImage}
+					/>
+				);
 			});
+
+			pagesRef.current = newPages as JSX.Element[];
+			setPages(newPages);
 
 			if (scrollContainer) {
 				const scroller = scrollContainer;
@@ -190,33 +219,24 @@ const usePDF = ({
 		pdfDoc,
 		loadingImage,
 		spinLoadingImage,
+		processQueueRef
 	]);
 
 	const changeZoomEnd = useCallback(() => {
 		if (pdfDoc) {
-			const ratio = (viewportRef.current?.height ?? 400) / (oldHeightRef.current ?? 600);
 			oldHeightRef.current = undefined;
-			if (ratio > 1.2) {
-				const currPage = getCurrentPage();
-				queueRenderPage(currPage);
-				if (currPage + 1 < pdfDoc.numPages) {
-					queueRenderPage(currPage + 1);
-				}
-				for (let i = 1; i <= pdfDoc.numPages ?? 0; i += 1) {
-					if (i !== currPage && i !== currPage + 1) {
-						queueRenderPage(i);
-					}
-				}
+			const currPage = getCurrentPage();
+			queueRenderPage(currPage, true);
+			if (currPage + 1 < pdfDoc.numPages) {
+				queueRenderPage(currPage + 1, true);
 			}
-			else {
-				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
-					if (!pages[i]?.props.imageSrc) {
-						queueRenderPage(i);
-					}
+			for (let i = 1; i <= pdfDoc.numPages ?? 0; i += 1) {
+				if (i !== currPage && i !== currPage + 1) {
+					queueRenderPage(i);
 				}
 			}
 		}
-	}, [getCurrentPage, pages, pdfDoc, queueRenderPage]);
+	}, [getCurrentPage, pdfDoc, queueRenderPage]);
 
 	const changeZoom = useCallback((scale: number) => {
 		changeZoomStart(scale);
@@ -225,11 +245,14 @@ const usePDF = ({
 
 	const renderCurrentPage = useCallback((force = false) => {
 		const currPage = getCurrentPage();
-		if (!isPageRendered(currPage) || force) {
-			queueRenderPage(currPage + 1, true);
+		const nextPage = Math.min(currPage + 1, pdfDoc?.numPages || 1);
+		if (force || !isPageRendered(nextPage)) {
+			queueRenderPage(nextPage, true);
+		}
+		if (force || !isPageRendered(currPage) || force) {
 			queueRenderPage(currPage, true);
 		}
-	}, [getCurrentPage, isPageRendered, queueRenderPage]);
+	}, [getCurrentPage, isPageRendered, queueRenderPage, pdfDoc]);
 
 	useEffect(() => {
 		if ((source.url || source.data || source.range) && !_.isEqual(source, prevSource.current)) {
@@ -238,7 +261,7 @@ const usePDF = ({
 			docLoaded.current = false;
 			renderQueue.current.length = 0;
 			prevSource.current = source;
-			setPages([]);
+			pagesRef.current = [];
 			// @ts-ignore
 			import("pdfjs-dist/es5/build/pdf").then((lib) => {
 				pdfjsLib.current = lib as IPDFJSLib;
@@ -266,23 +289,22 @@ const usePDF = ({
 			pdfDoc.getPage(1).then((page) => {
 				viewportRef.current = page.getViewport({ scale: scaleRef.current });
 				page.cleanup();
-				setPages((oldPages) => {
-					const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
-					const { numPages } = pdfDoc;
-					const newPages = [...oldPages];
-					for (let i = 1; i <= numPages; i += 1) {
-						newPages[i] = (
-							<PlaceholderPage
-								key={`page${i}`}
-								width={width}
-								height={height}
-								loadingImage={loadingImage}
-								spin={spinLoadingImage}
-							/>
-						);
-					}
-					return newPages;
-				});
+				const newPages = [...pagesRef.current];
+				const { width, height } = viewportRef.current ?? { width: 100, height: 100 };
+				const { numPages } = pdfDoc;
+				for (let i = 1; i <= numPages; i += 1) {
+					newPages[i] = (
+						<PlaceholderPage
+							key={`page${i}`}
+							width={width}
+							height={height}
+							loadingImage={loadingImage}
+							spin={spinLoadingImage}
+						/>
+					);
+				}
+				pagesRef.current = newPages;
+				setPages(newPages);
 
 				for (let i = 1; i <= pdfDoc.numPages; i += 1) {
 					queueRenderPage(i);
