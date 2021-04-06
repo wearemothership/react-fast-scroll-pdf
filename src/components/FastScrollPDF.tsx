@@ -20,13 +20,13 @@ const FastScrollPDF = ({
 		scrollContainer: scrollContainerRef.current,
 		viewer: viewerRef.current
 	});
-
-	const scrollDocument = _.debounce(() => renderCurrentPage(), 500, { maxWait: 500 });
+	const scrollDocument = _.debounce(() => renderCurrentPage(), 100);
 	const zoomButtons = useMemo(() => (
 		<ZoomButtons
 			zoomChangeStart={changeZoomStart}
 			zoomChangeEnd={changeZoomEnd}
-		/>), [changeZoomStart, changeZoomEnd]);
+		/>
+	), [changeZoomStart, changeZoomEnd]);
 
 	useEffect(() => {
 		const oldRef = scrollContainerRef.current;
@@ -37,10 +37,7 @@ const FastScrollPDF = ({
 
 	return (
 		<div className={[className, styles.fastScrollPDF].join(" ")}>
-			{ hideZoom
-				? null
-				: zoomButtons
-				}
+			{ hideZoom ? null : zoomButtons }
 			<PDFDocument scrollContainerRef={scrollContainerRef} viewerRef={viewerRef} pages={pages} />
 		</div>
 	);
