@@ -34,6 +34,7 @@ const usePDF = ({
 	const pageRendering = useRef(false);
 	const docLoaded = useRef(false);
 	const oldHeightRef = useRef<number>();
+	const processQueueRef = useRef<_.DebouncedFunc<() => void> | null>(null);
 
 	const renderPage = useCallback((num) => {
 		if (!docLoaded.current) {
@@ -125,13 +126,17 @@ const usePDF = ({
 		}
 	}, [pdfDoc, linkService, enableAnnotations]);
 
-	// TODO: this works but needs fixing...
-	const processQueue = useCallback(_.debounce(() => {
-		const page = renderQueue.current[0];
-		if (page && !pageRendering.current) {
-			renderPage(page);
+	const processQueue = useCallback(() => {
+		if (!processQueueRef.current) {
+			processQueueRef.current = _.debounce(() => {
+				const page = renderQueue.current[0];
+				if (page && !pageRendering.current) {
+					renderPage(page);
+				}
+			}, 100);
 		}
-	}, 100), [renderPage, renderQueue, pageRendering]);
+		processQueueRef.current();
+	}, [renderPage, renderQueue, pageRendering]);
 
 	const queueRenderPage = useCallback((num: number, jumpQueue = false) => {
 		if (jumpQueue) {
@@ -166,7 +171,7 @@ const usePDF = ({
 		!!pagesRef.current[pageNo]?.props.imageSrc), [pagesRef]);
 
 	const changeZoomStart = useCallback((scale: number) => {
-		processQueue.cancel();
+		processQueueRef.current?.cancel();
 		scaleRef.current = scale;
 		renderQueue.current.length = 0;
 		const oldTopPos = scrollContainer?.scrollTop / scrollContainer?.scrollHeight;
@@ -214,7 +219,7 @@ const usePDF = ({
 		pdfDoc,
 		loadingImage,
 		spinLoadingImage,
-		processQueue
+		processQueueRef
 	]);
 
 	const changeZoomEnd = useCallback(() => {
