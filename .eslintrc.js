@@ -58,7 +58,6 @@ module.exports = {
 		"no-use-before-define": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",
 		"no-shadow": "off",
-		"@typescript-eslint/no-shadow": "error"
 	},
 	parserOptions: {
 		sourceType: "module"
@@ -80,6 +79,7 @@ module.exports = {
 			rules: {
 				"@typescript-eslint/explicit-module-boundary-types": ["error"],
 				"@typescript-eslint/no-use-before-define": ["error"],
+				"@typescript-eslint/no-shadow": "error"
 			}
 		}
 	]
