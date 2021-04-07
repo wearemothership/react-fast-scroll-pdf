@@ -23,6 +23,7 @@
     "example": "npm run build && cd example && npm install && npm start"
   },
   "dependencies": {
+    "immer": "^9.0.1",
     "lodash": "^4.17.21",
     "pdfjs-dist": "^2.6.347",
     "react-html-parser": "^2.0.2"
