@@ -56,7 +56,7 @@ module.exports = {
 		}],
 		"react/jsx-fragments": [2, "syntax"],
 		"no-use-before-define": "off",
-		"@typescript-eslint/explicit-module-boundary-types": "off"
+		"@typescript-eslint/explicit-module-boundary-types": "off",
 	},
 	parserOptions: {
 		sourceType: "module"
@@ -78,6 +78,8 @@ module.exports = {
 			rules: {
 				"@typescript-eslint/explicit-module-boundary-types": ["error"],
 				"@typescript-eslint/no-use-before-define": ["error"],
+				"no-shadow": "off",
+				"@typescript-eslint/no-shadow": "error"
 			}
 		}
 	]

@@ -16,7 +16,7 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	transition: 0.2s all ease-out;
-	flex: 1
+	flex: 1;
 }
 
 .buttonGroup {
@@ -28,6 +28,10 @@
 	margin-bottom: 3px;
 	margin-left: auto;
 	margin-right: 3px;
+	
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
 }
 
 .buttonGroup .zoomButton:first-of-type {
