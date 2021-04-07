@@ -15,7 +15,8 @@ const Flex = ({
 	padding = "0",
 	width = "auto",
 	height = "auto",
-	maxWidth = "100%"
+	maxWidth = "100%",
+	backgroundColor = null
 }) => (
 	<div
 		className={className}
@@ -34,6 +35,7 @@ const Flex = ({
 			width,
 			height,
 			maxWidth,
+			backgroundColor
 		}}
 	>
 		{ children }
