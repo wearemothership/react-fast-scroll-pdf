@@ -75,9 +75,19 @@ const ZoomButtons = ({
 		zoomStateRef.current = {
 			pos: zoom,
 			direction,
-			lastTimestamp: timestamp,
-			animReq: window.requestAnimationFrame(doZoom)
+			lastTimestamp: timestamp
 		};
+		if (timestamp === 0) {
+			setTimeout(() => {
+				const { direction: dir } = zoomStateRef.current;
+				if (dir !== ZoomDirection.None) {
+					zoomStateRef.current.animReq = window.requestAnimationFrame(doZoom);
+				}
+			}, 150);
+		}
+		else {
+			zoomStateRef.current.animReq = window.requestAnimationFrame(doZoom);
+		}
 
 		if (zoom !== pos) {
 			zoomChangeStart(zoom);
