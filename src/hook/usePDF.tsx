@@ -9,6 +9,7 @@ import _ from "lodash";
 import { PDFDocumentProxy, PDFPageProxy, getDocument } from "pdfjs-dist/types/display/api";
 import { PageViewport } from "pdfjs-dist/types/display/display_utils";
 import { produce } from "immer";
+import ReactHTMLParser from "react-html-parser";
 import PDFPage from "../components/PDFPage";
 import PlaceholderPage from "../components/PlaceholderPage";
 
@@ -103,7 +104,7 @@ const usePDF = ({
 								imageSrc={pageCanvasRef.current.toDataURL("image/png")}
 								key={`page${num}`}
 							>
-								{ enableAnnotations ? <div /> : null}
+								{ enableAnnotations ? ReactHTMLParser(annotationDiv.outerHTML) : null}
 							</PDFPage>
 						);
 					}));
