@@ -50,7 +50,8 @@ interface IPDFDocument {
 	scrollContainerRef?: MutableRefObject<HTMLDivElement>,
 	viewerRef?: MutableRefObject<HTMLDivElement>,
 	pages: (JSX.Element | undefined)[],
-	className?: string
+	className?: string,
+	rowGap?: string
 }
 
 interface IFastScrollPDF extends IUsePDF {

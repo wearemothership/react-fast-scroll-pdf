@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import _ from "lodash";
 import ZoomButtons from "./ZoomButtons";
 import PDFDocument from "./PDFDocument";
@@ -8,6 +8,7 @@ import styles from "./styles/FastScrollPDF.module.css";
 const FastScrollPDF = ({
 	source, loadingImage, enableAnnotations, className, spinLoadingImage, hideZoom = false
 }: IFastScrollPDF): JSX.Element => {
+	const [zoom, setZoom] = useState(1);
 	const scrollContainerRef = useRef<HTMLDivElement>();
 	const viewerRef = useRef<HTMLDivElement>();
 	const {
@@ -21,12 +22,11 @@ const FastScrollPDF = ({
 		viewer: viewerRef.current
 	});
 	const scrollDocument = _.debounce(() => renderCurrentPage(), 100);
-	const zoomButtons = useMemo(() => (
-		<ZoomButtons
-			zoomChangeStart={changeZoomStart}
-			zoomChangeEnd={changeZoomEnd}
-		/>
-	), [changeZoomStart, changeZoomEnd]);
+
+	const doZoom = (newZoom: number) => {
+		setZoom(newZoom);
+		changeZoomStart(newZoom);
+	};
 
 	useEffect(() => {
 		const oldRef = scrollContainerRef.current;
@@ -37,8 +37,15 @@ const FastScrollPDF = ({
 
 	return (
 		<div className={[className, styles.fastScrollPDF].join(" ")}>
-			{ hideZoom ? null : zoomButtons }
-			<PDFDocument scrollContainerRef={scrollContainerRef} viewerRef={viewerRef} pages={pages} />
+			{ hideZoom
+				? null
+				: (
+					<ZoomButtons
+						zoomChangeStart={doZoom}
+						zoomChangeEnd={changeZoomEnd}
+					/>
+				) }
+			<PDFDocument scrollContainerRef={scrollContainerRef} viewerRef={viewerRef} pages={pages} rowGap={`${32 * zoom}px`} />
 		</div>
 	);
 };
