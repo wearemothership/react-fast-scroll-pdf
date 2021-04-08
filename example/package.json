@@ -7,7 +7,8 @@
   "dependencies": {
     "react": "file:../node_modules/react",
     "react-dom": "^17.0.2",
-    "react-fast-scroll-pdf": "file:.."
+    "react-fast-scroll-pdf": "file:..",
+    "react-icons": "^4.2.0"
   },
   "scripts": {
     "start": "../node_modules/.bin/react-scripts start",

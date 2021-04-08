@@ -267,7 +267,15 @@ const usePDF = ({
 						loadingTask?.promise.then((pdfDocument: PDFDocumentProxy) => {
 							docLoaded.current = true;
 							setPdfDoc(pdfDocument);
-						});
+						})
+							.catch((err) => {
+								console.error("Error loading PDF", err);
+								setPages([
+									<div style={{ width: "300px", height: "100px" }} data-type="error">
+										{`Error loading PDF: ${err}`}
+									</div>
+								]);
+							});
 					});
 			});
 		}
