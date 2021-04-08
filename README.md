@@ -1,5 +1,5 @@
 # react-fast-scroll-pdf
-**A small, super-fast javascript DICOM renderer**
+**A small, super-fast javascript PDF renderer**
 
 <!-- INTRODUCTION -->
 We needed a way to very quickly render a complete PDF document but without using a lot of canvas elements (iPads etc limit the amount of canvas memory). This uses a single canvas element and uses pdfjs-dist to render each pdf page before converting it to a PNG image. PDF annotations are then placed on top of the image so that links etc still work.
@@ -35,7 +35,7 @@ git clone https://github.com/wearemothership/react-fast-scroll-pdf
 We have provied some demos of how this can be used in your project.
 
 #### Online demo
-- [Simple](https://github.com/wearemothership/dicom.js)
+- [Simple](https://wearemothership.github.io/react-fast-scroll-pdf/)
 
 ##### Or build and run the demos locally
 ```bash
@@ -234,6 +234,7 @@ These two components can be accessed via an import and may be useful if you wish
 - scrollContainerRef: (optional) a ref object to store a ref to the div set to be used for scrolling.
 - viewerRef: (optional) a ref object to store a ref to the div which contains all the pages (usually a child of scrollContainer).
 - className: (optional) a class to apply to the document div.
+- rowGap: (optional) the gap between pages as a css string (default: "16px").
 
 #### ZoomButtons
 - zoomChange: (required) a function that accepts a zoom number and carried out the required zoom action.
