@@ -2,10 +2,10 @@ import React from "react";
 import styles from "./styles/PDFDocument.module.css";
 
 const PDFDocument = ({
-	scrollContainerRef, viewerRef, pages, className
+	scrollContainerRef, viewerRef, pages, className, rowGap
 }: IPDFDocument): JSX.Element => (
 	<div id="scrollContainer" ref={scrollContainerRef} className={[className, styles.pdfDocument].join(" ")}>
-		<div id="viewer" ref={viewerRef} className={styles.viewer}>
+		<div id="viewer" ref={viewerRef} className={styles.viewer} style={{ rowGap: rowGap || "16px" }}>
 			{pages}
 		</div>
 	</div>

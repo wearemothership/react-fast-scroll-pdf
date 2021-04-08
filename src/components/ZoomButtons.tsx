@@ -77,20 +77,24 @@ const ZoomButtons = ({
 			direction,
 			lastTimestamp: timestamp
 		};
-		if (timestamp === 0) {
-			setTimeout(() => {
-				const { direction: dir } = zoomStateRef.current;
-				if (dir !== ZoomDirection.None) {
-					zoomStateRef.current.animReq = window.requestAnimationFrame(doZoom);
-				}
-			}, 150);
-		}
-		else {
-			zoomStateRef.current.animReq = window.requestAnimationFrame(doZoom);
-		}
 
 		if (zoom !== pos) {
+			if (timestamp === 0) {
+				setTimeout(() => {
+					const { direction: dir } = zoomStateRef.current;
+					if (dir !== ZoomDirection.None) {
+						zoomStateRef.current.animReq = window.requestAnimationFrame(doZoom);
+					}
+				}, 150);
+			}
+			else {
+				zoomStateRef.current.animReq = window.requestAnimationFrame(doZoom);
+			}
 			zoomChangeStart(zoom);
+		}
+		else {
+			zoomStateRef.current.direction = ZoomDirection.None;
+			zoomChangeEnd();
 		}
 	};
 
