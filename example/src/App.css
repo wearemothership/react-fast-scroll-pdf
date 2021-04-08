@@ -59,7 +59,6 @@ button {
 }
 
 button, ::-webkit-file-upload-button {
-	display: flex;
 	margin-right: 0.5em;
 	background: rgb(242, 242, 242);
 	padding: 0.5em 0.75em;
