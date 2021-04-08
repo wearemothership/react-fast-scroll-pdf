@@ -120,7 +120,7 @@ const usePDF = ({
 						renderQueue.current = renderQueue.current.filter((p) => p !== num);
 						if (renderQueue.current.length > 0) {
 							// New page rendering is pending
-							const no = renderQueue.current.shift();
+							const no = renderQueue.current[0];
 							renderPage(no);
 						}
 					});
