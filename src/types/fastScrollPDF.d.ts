@@ -36,12 +36,6 @@ type TUsePDF = {
 
 type TPage = IPlaceholderPage | IPDFPage
 
-interface IPDFJSLib {
-	AnnotationLayer: AnnotationLayer,
-	GlobalWorkerOptions: GlobalWorkerOptions,
-	getDocument: getDocument
-}
-
 interface IZoomButtons {
 	zoomChangeStart: (zoom: number) => void,
 	zoomChangeEnd: () => void,

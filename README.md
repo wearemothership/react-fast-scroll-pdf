@@ -226,7 +226,8 @@ These two components can be accessed via an import and may be useful if you wish
 - loadingImage: (optional) an image that will be spun in the middle of loading pages (default: spinner gif - courtesy of <a href="https://icons8.com/" targe="_blank">icons8</a>).
 - spinLoadingImage: (optional) Whether to spin the loading image (default: false)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true),
-- className: (optional) a CSS class to apply to the main window. (default: none)
+- className: (optional) a CSS class to apply to the main window. (default: none),
+- hideZoom: (optional) if true, the zoom buttons are hidden. (default: false)
 
 #### PDFDocument
 - pages: (required) The list of pages returned from the usePDF hook.
@@ -236,10 +237,10 @@ These two components can be accessed via an import and may be useful if you wish
 
 #### ZoomButtons
 - zoomChange: (required) a function that accepts a zoom number and carried out the required zoom action.
-- zoomStep: (optional) the increment to change the zoom amount by (plus or minus). (default: 0.1)
+- zoomStep: (optional) the increment to change the zoom amount by per second (plus or minus). (default: 1)
 - zoomStart: (optional) the starting zoom. (default: 1)
 - minZoom: (optional) the minimum amount of zoom (default: 0.1)
-- maxZoom: (optional) the maximum amount of zoom (default: 3)
+- maxZoom: (optional) the maximum amount of zoom (default: 5)
 - className: (optional) a CSS class to apply to the buttons.
 
 #### PDFPage
@@ -248,7 +249,7 @@ These two components can be accessed via an import and may be useful if you wish
 - pageNum: (required) the page number represented by the component.
 - imageSrc: (required) a data URL or image location to be displayed.
 - type: (optional) one of "place" or "canvas" for placeholder or image canvas.
-- children: (optional) child nodes to display *over the top of* the page.
+- children: (optional) child nodes to display *over the top of* the page (e.g. annotation layer - use styling to position correctly)
 
 #### PlaceholderPage
 - width: (required) the width of the page in px.
@@ -265,10 +266,10 @@ These two components can be accessed via an import and may be useful if you wish
 
 #### usePDF return
 - pages: a fragment of Placeholder pages or PDFPages (as images) as div & img elements
-- changeZoom: call this function to zoom in on the pdf and recreate the images.
-****
-
-
+- changeZoom: call this function to zoom in on the pdf and recreate the images. (scale: number) => void
+- changeZoomStart: Call this function when zooming first starts. (scale: number) => void
+- changeZoomEnd: call this function when zooming ends. () => void
+- renderCurrentPage: Render the page currently in view (and the next page). If the page is already rendered nothing happens unless 'force' is true. (force: boolean) => void
 
 ### PDF.js source object
 You can find details of the options available on the source object <a href="https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib.html#~DocumentInitParameters" target="_blank">here</a>.
