@@ -310,11 +310,16 @@ const usePDF = ({
 		}
 	}, [pdfDoc, queueRenderPage, loadingImage, spinLoadingImage]);
 
+	const docRef = useRef(pdfDoc);
+	useEffect(() => {
+		docRef.current = pdfDoc;
+	}, [pdfDoc]);
+
 	useEffect(() => () => {
+		renderQueue.current.length = 0;
 		docLoaded.current = false;
-		pdfDoc?.cleanup();
-		pdfDoc?.destroy();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		docRef.current?.cleanup();
+		docRef.current?.destroy();
 	}, []);
 
 	return useMemo(() => ({
