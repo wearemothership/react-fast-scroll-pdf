@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable import/no-unresolved */
 // @ts-ignore
-import { PDFLinkService, AnnotationLayer, GlobalWorkerOptions } from "pdfjs-dist/es5/web/pdf_viewer";
+import { PDFLinkService, AnnotationLayer, GlobalWorkerOptions } from "pdfjs-dist/legacy/web/pdf_viewer";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo
 } from "react";
@@ -252,10 +252,10 @@ const usePDF = ({
 			prevSource.current = source;
 			setPages([]);
 			// @ts-ignore
-			import("pdfjs-dist/es5/build/pdf").then((lib) => {
+			import("pdfjs-dist/legacy/build/pdf").then((lib) => {
 				pdfjsLib.current = lib as IPDFJSLib;
 				// @ts-ignore
-				import("pdfjs-dist/es5/build/pdf.worker.entry")
+				import("pdfjs-dist/legacy/build/pdf.worker.entry")
 					.then((pdfjsWorker) => {
 						pdfjsLib.current.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -310,11 +310,16 @@ const usePDF = ({
 		}
 	}, [pdfDoc, queueRenderPage, loadingImage, spinLoadingImage]);
 
+	const docRef = useRef(pdfDoc);
+	useEffect(() => {
+		docRef.current = pdfDoc;
+	}, [pdfDoc]);
+
 	useEffect(() => () => {
+		renderQueue.current.length = 0;
 		docLoaded.current = false;
-		pdfDoc?.cleanup();
-		pdfDoc?.destroy();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		docRef.current?.cleanup();
+		docRef.current?.destroy();
 	}, []);
 
 	return useMemo(() => ({
