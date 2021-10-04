@@ -1,24 +1,24 @@
 {
   "files": {
     "main.css": "/react-fast-scroll-pdf/static/css/main.643ffa72.chunk.css",
-    "main.js": "/react-fast-scroll-pdf/static/js/main.2f828feb.chunk.js",
-    "main.js.map": "/react-fast-scroll-pdf/static/js/main.2f828feb.chunk.js.map",
-    "runtime-main.js": "/react-fast-scroll-pdf/static/js/runtime-main.197dde95.js",
-    "runtime-main.js.map": "/react-fast-scroll-pdf/static/js/runtime-main.197dde95.js.map",
-    "static/js/2.9d43abe9.chunk.js": "/react-fast-scroll-pdf/static/js/2.9d43abe9.chunk.js",
-    "static/js/2.9d43abe9.chunk.js.map": "/react-fast-scroll-pdf/static/js/2.9d43abe9.chunk.js.map",
-    "static/js/3.1daa05bf.chunk.js": "/react-fast-scroll-pdf/static/js/3.1daa05bf.chunk.js",
-    "static/js/3.1daa05bf.chunk.js.map": "/react-fast-scroll-pdf/static/js/3.1daa05bf.chunk.js.map",
+    "main.js": "/react-fast-scroll-pdf/static/js/main.8132cd9f.chunk.js",
+    "main.js.map": "/react-fast-scroll-pdf/static/js/main.8132cd9f.chunk.js.map",
+    "runtime-main.js": "/react-fast-scroll-pdf/static/js/runtime-main.6fa73306.js",
+    "runtime-main.js.map": "/react-fast-scroll-pdf/static/js/runtime-main.6fa73306.js.map",
+    "static/js/2.47d22bde.chunk.js": "/react-fast-scroll-pdf/static/js/2.47d22bde.chunk.js",
+    "static/js/2.47d22bde.chunk.js.map": "/react-fast-scroll-pdf/static/js/2.47d22bde.chunk.js.map",
+    "static/js/3.28e6ab91.chunk.js": "/react-fast-scroll-pdf/static/js/3.28e6ab91.chunk.js",
+    "static/js/3.28e6ab91.chunk.js.map": "/react-fast-scroll-pdf/static/js/3.28e6ab91.chunk.js.map",
     "index.html": "/react-fast-scroll-pdf/index.html",
     "static/css/main.643ffa72.chunk.css.map": "/react-fast-scroll-pdf/static/css/main.643ffa72.chunk.css.map",
-    "static/js/2.9d43abe9.chunk.js.LICENSE.txt": "/react-fast-scroll-pdf/static/js/2.9d43abe9.chunk.js.LICENSE.txt",
-    "static/js/3.1daa05bf.chunk.js.LICENSE.txt": "/react-fast-scroll-pdf/static/js/3.1daa05bf.chunk.js.LICENSE.txt",
+    "static/js/2.47d22bde.chunk.js.LICENSE.txt": "/react-fast-scroll-pdf/static/js/2.47d22bde.chunk.js.LICENSE.txt",
+    "static/js/3.28e6ab91.chunk.js.LICENSE.txt": "/react-fast-scroll-pdf/static/js/3.28e6ab91.chunk.js.LICENSE.txt",
     "static/media/example1.99d8886c.pdf": "/react-fast-scroll-pdf/static/media/example1.99d8886c.pdf"
   },
   "entrypoints": [
-    "static/js/runtime-main.197dde95.js",
-    "static/js/2.9d43abe9.chunk.js",
+    "static/js/runtime-main.6fa73306.js",
+    "static/js/2.47d22bde.chunk.js",
     "static/css/main.643ffa72.chunk.css",
-    "static/js/main.2f828feb.chunk.js"
+    "static/js/main.8132cd9f.chunk.js"
   ]
 }
