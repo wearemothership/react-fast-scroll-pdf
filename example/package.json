@@ -1,14 +1,14 @@
 {
   "name": "react-fast-scroll-pdf-example",
   "homepage": "https://wearemothership.github.io/react-fast-scroll-pdf",
-  "version": "0.2.3",
+  "version": "1.0.1",
   "license": "MIT",
   "private": true,
   "dependencies": {
     "react": "file:../node_modules/react",
     "react-dom": "^17.0.2",
     "react-fast-scroll-pdf": "file:..",
-    "react-icons": "^4.2.0"
+    "react-icons": "^4.3.1"
   },
   "scripts": {
     "start": "../node_modules/.bin/react-scripts start",
@@ -22,6 +22,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@types/react-dom": "^17.0.2"
+    "@types/react-dom": "^17.0.9"
   }
 }
