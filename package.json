@@ -4,9 +4,10 @@
   "description": "Image-based PDF viewer using pdfjs",
   "author": "wearemothership",
   "license": "MIT",
+  "keywords": ["react", "pdf", "scroll", "ui", "react-component", "pdfjs", "pdf.js"],
   "repository": "wearemothership/react-fast-scroll-pdf",
-  "main": "dist/main/",
-  "module": "dist/esm/",
+  "main": "./main/index.js",
+  "module": "./esm/index.js",
   "types": "dist/index.d.ts",
   "engines": {
     "node": ">=8",
@@ -80,5 +81,11 @@
       "@babel/plugin-transform-react-jsx",
       "@babel/plugin-transform-runtime"
     ]
+  },
+  "exports": {
+    ".": {
+      "require": "./main/index.js",
+      "import": "./esm/index.js"
+    }
   }
 }
