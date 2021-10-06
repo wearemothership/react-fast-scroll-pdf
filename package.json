@@ -85,7 +85,7 @@
   "exports": {
     ".": {
       "require": "./main/index.js",
-      "import": "./esm/index.js"
+      "default": "./esm/index.js"
     }
   }
 }
