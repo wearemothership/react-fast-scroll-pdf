@@ -21,10 +21,10 @@ export default {
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
-				pdf_viewer: "pdfjs-dist/legacy/web/pdf_viewer",
-				_: "lodash",
+				"pdfjs-dist/legacy/web/pdf_viewer": "pdf_viewer",
+				lodash: "_",
 				immer: "immer",
-				ReactHTMLParser: "react-html_parser"
+				"react-html-parser": "ReactHTMLParser"
 			},
 		},
 		{
