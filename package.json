@@ -84,8 +84,8 @@
   },
   "exports": {
     ".": {
-      "require": "./main/index.js",
-      "default": "./esm/index.js"
+      "require": "./dist/main/index.js",
+      "default": "./dist/esm/index.js"
     }
   }
 }
