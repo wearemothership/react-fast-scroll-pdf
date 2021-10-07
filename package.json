@@ -6,8 +6,8 @@
   "license": "MIT",
   "keywords": ["react", "pdf", "scroll", "ui", "react-component", "pdfjs", "pdf.js"],
   "repository": "wearemothership/react-fast-scroll-pdf",
-  "main": "dist/main/index.js",
-  "module": "dist/esm/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
   "types": "dist/index.d.ts",
   "engines": {
     "node": ">=8",
@@ -84,8 +84,8 @@
   },
   "exports": {
     ".": {
-      "require": "./dist/main/index.js",
-      "default": "./dist/esm/index.js"
+      "require": "./dist/index.js",
+      "default": "./dist/index.module.js"
     }
   }
 }

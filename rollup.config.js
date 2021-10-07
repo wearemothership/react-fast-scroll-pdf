@@ -6,7 +6,6 @@ import postcss from "rollup-plugin-postcss";
 import image from "@rollup/plugin-image";
 import babel from "@rollup/plugin-babel";
 import json from "@rollup/plugin-json";
-import pkg from "./package.json";
 
 const EXTENSIONS = [".js", ".jsx", ".ts", ".tsx", ".json"];
 
@@ -14,17 +13,22 @@ export default {
 	input: "src/index.tsx",
 	output: [
 		{
-			dir: pkg.main,
-			format: "cjs",
+			file: "./dist/index.js",
+			format: "umd",
+			name: "FastScrollPDF",
 			exports: "named",
 			sourcemap: true,
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
+				pdf_viewer: "pdfjs-dist/legacy/web/pdf_viewer",
+				_: "lodash",
+				immer: "immer",
+				ReactHTMLParser: "react-html_parser"
 			},
 		},
 		{
-			dir: pkg.module,
+			file: "./dist/index.module.js",
 			format: "esm",
 			exports: "named",
 			sourcemap: true,
