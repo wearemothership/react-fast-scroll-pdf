@@ -1,23 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable import/no-unresolved */
 // @ts-ignore
-import { PDFLinkService, AnnotationLayer, GlobalWorkerOptions } from "pdfjs-dist/legacy/web/pdf_viewer";
+import { PDFLinkService } from "pdfjs-dist/web/pdf_viewer";
+// @ts-ignore
+import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo
 } from "react";
 import _ from "lodash";
-import { PDFDocumentProxy, PDFPageProxy, getDocument } from "pdfjs-dist/types/display/api";
-import { PageViewport } from "pdfjs-dist/types/display/display_utils";
 import { produce } from "immer";
 import ReactHTMLParser from "react-html-parser";
+import type { PDFPageProxy, PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
+import type { PageViewport } from "pdfjs-dist/types/src/display/display_utils";
+import * as pdfjsLib from "pdfjs-dist";
 import PDFPage from "../components/PDFPage";
 import PlaceholderPage from "../components/PlaceholderPage";
-
-interface IPDFJSLib {
-	AnnotationLayer: AnnotationLayer,
-	GlobalWorkerOptions: GlobalWorkerOptions,
-	getDocument: typeof getDocument
-}
 
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
@@ -35,7 +32,6 @@ const usePDF = ({
 	const prevSource = useRef();
 	const viewportRef = useRef<PageViewport>();
 	const renderQueue = useRef<number[]>([]);
-	const pdfjsLib = useRef<Partial<IPDFJSLib>>({});
 	const pageCanvasRef = useRef(document.createElement("canvas"));
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
@@ -80,17 +76,19 @@ const usePDF = ({
 						return;
 					}
 					let annotationDiv: HTMLDivElement;
-					if (enableAnnotations) {
+					if (enableAnnotations && annotationData) {
 						annotationDiv = document.createElement("div");
 						annotationDiv.id = `annot${num}`;
 						annotationDiv.className = "annotationLayer";
 
-						pdfjsLib.current.AnnotationLayer.render({
+						pdfjsLib.AnnotationLayer.render({
 							viewport: viewport.clone({ dontFlip: true }),
 							div: annotationDiv,
 							annotations: annotationData,
 							page,
-							linkService
+							linkService,
+							downloadManager: null,
+							renderInteractiveForms: false
 						});
 					}
 
@@ -109,7 +107,7 @@ const usePDF = ({
 						);
 					}));
 				})
-					.catch((e) => {
+					.catch((e: Error) => {
 						if (e.name !== "RenderingCancelledException") {
 							console.error(`Render Page: ${e}`);
 						}
@@ -124,12 +122,12 @@ const usePDF = ({
 							renderPage(no);
 						}
 					});
-			}).catch((err) => {
+			}).catch((err: Error) => {
 				console.error(err);
 				pageRendering.current = false;
 			});
 		}
-	}, [pdfDoc, linkService, enableAnnotations]);
+	}, [pdfDoc, enableAnnotations, linkService]);
 
 	const processQueue = useMemo(() => _.debounce(() => {
 		const page = renderQueue.current[0];
@@ -174,7 +172,7 @@ const usePDF = ({
 		if (!oldHeightRef.current) {
 			oldHeightRef.current = viewportRef.current?.height ?? 300;
 		}
-		pdfDoc?.getPage(1).then((page) => {
+		pdfDoc?.getPage(1).then((page: PDFPageProxy) => {
 			viewportRef.current = page.getViewport({ scale });
 			const { width, height } = viewportRef.current;
 			page.cleanup();
@@ -207,7 +205,7 @@ const usePDF = ({
 				scroller.scrollTop = scrollContainer.scrollHeight * oldTopPos;
 			}
 		})
-			.catch((e) => console.error(`Change Zoom ${e}`));
+			.catch((e: Error) => console.error(`Change Zoom ${e}`));
 	}, [processQueue, scrollContainer, pdfDoc, loadingImage, spinLoadingImage]);
 
 	const changeZoomEnd = useCallback(() => {
@@ -251,33 +249,26 @@ const usePDF = ({
 			renderQueue.current.length = 0;
 			prevSource.current = source;
 			setPages([]);
-			// @ts-ignore
-			import("pdfjs-dist/legacy/build/pdf").then((lib) => {
-				pdfjsLib.current = lib as IPDFJSLib;
-				// @ts-ignore
-				import("pdfjs-dist/legacy/build/pdf.worker.entry")
-					.then((pdfjsWorker) => {
-						pdfjsLib.current.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-						const loadingTask = pdfjsLib.current?.getDocument?.({
-							cMapUrl: CMAP_URL,
-							cMapPacked: true,
-							...source
-						});
-						loadingTask?.promise.then((pdfDocument: PDFDocumentProxy) => {
-							docLoaded.current = true;
-							setPdfDoc(pdfDocument);
-						})
-							.catch((err) => {
-								console.error("Error loading PDF", err);
-								setPages([
-									<div style={{ width: "300px", height: "100px" }} data-type="error">
-										{`Error loading PDF: ${err}`}
-									</div>
-								]);
-							});
-					});
+			pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
+			const loadingTask = pdfjsLib.getDocument?.({
+				cMapUrl: CMAP_URL,
+				cMapPacked: true,
+				...source
 			});
+			loadingTask?.promise.then((pdfDocument: PDFDocumentProxy) => {
+				docLoaded.current = true;
+				setPdfDoc(pdfDocument);
+			})
+				.catch((err: Error) => {
+					console.error("Error loading PDF", err);
+					setPages([
+						<div style={{ width: "300px", height: "100px" }} data-type="error">
+							{`Error loading PDF: ${err}`}
+						</div>
+					]);
+				});
 		}
 	}, [source, pdfDoc]);
 
@@ -306,7 +297,7 @@ const usePDF = ({
 					queueRenderPage(i);
 				}
 			})
-				.catch((e) => console.error(`UseEffect (pdfDoc, queueRenderPage, loadingImage) ${e}`));
+				.catch((e: Error) => console.error(`UseEffect (pdfDoc, queueRenderPage, loadingImage) ${e}`));
 		}
 	}, [pdfDoc, queueRenderPage, loadingImage, spinLoadingImage]);
 

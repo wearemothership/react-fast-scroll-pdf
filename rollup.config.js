@@ -6,60 +6,74 @@ import postcss from "rollup-plugin-postcss";
 import image from "@rollup/plugin-image";
 import babel from "@rollup/plugin-babel";
 import json from "@rollup/plugin-json";
+import polyfill from "rollup-plugin-node-polyfills";
+import inject from "rollup-plugin-inject-process-env";
+import { terser } from "rollup-plugin-terser";
 
-const EXTENSIONS = [".js", ".jsx", ".ts", ".tsx", ".json"];
+const EXTENSIONS = ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'];
 
 export default {
 	input: "src/index.tsx",
 	output: [
 		{
-			file: "./dist/index.js",
+			dir: "./dist/umd/",
 			format: "umd",
-			name: "FastScrollPDF",
 			exports: "named",
 			sourcemap: true,
+			name: "FastScrollPDF",
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
-				"pdfjs-dist/legacy/web/pdf_viewer": "pdf_viewer",
 				lodash: "_",
+				"pdfjs-dist": "pdfjs-dist",
+				"pdfjs-dist/build/pdf.worker.entry": "pdfjsWorker",
+				"pdfjs-dist/web/pdf_viewer": "pdf_viewer",
 				immer: "immer",
 				"react-html-parser": "ReactHTMLParser"
 			},
 		},
 		{
-			file: "./dist/index.module.js",
+			dir: "./dist/esm/",
 			format: "esm",
 			exports: "named",
 			sourcemap: true,
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
+				lodash: "_",
+				"pdfjs-dist": "pdfjs-dist",
+				"pdfjs-dist/build/pdf.worker.entry": "pdfjsWorker",
+				"pdfjs-dist/web/pdf_viewer": "pdf_viewer",
+				immer: "immer",
+				"react-html-parser": "ReactHTMLParser"
 			},
 		}
 	],
-	external: [/@babel\/runtime/],
+	external: [/@babel\/runtime/, "lodash"],
 	plugins: [
 		image(),
-		external({
-			includeDependencies: true,
-		}),
+		json(),
+		polyfill(),
 		postcss({
 			modules: true
 		}),
-		babel({
-			exclude: "node_modules/**",
-			extensions: EXTENSIONS,
-			babelHelpers: "runtime"
-		}),
-		json(),
+		external(),
 		resolve({
+			browser: true,
 			preferBuiltins: true,
 			extensions: EXTENSIONS
 		}),
+		commonjs(),
 		typescript(),
-		commonjs({
-			include: /node_modules/,
+		babel({
+			exclude: 'node_modules/**',
+			extensions: EXTENSIONS,
+			babelHelpers: "runtime"
+		}),
+		inject({
+			NODE_ENV: "production",
+			NODE_DEBUG: "false"
 		})
+		// terser()
 	]
 };
