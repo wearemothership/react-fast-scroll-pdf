@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import typescript from "@rollup/plugin-typescript";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
@@ -21,10 +22,10 @@ export default {
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
-				"pdfjs-dist/legacy/web/pdf_viewer": "pdf_viewer",
+				"pdfjs-dist/web/pdf_viewer": "pdf_viewer",
 				lodash: "_",
 				immer: "immer",
-				"react-html-parser": "ReactHTMLParser"
+				"html-react-parser": "parse"
 			},
 		},
 		{
