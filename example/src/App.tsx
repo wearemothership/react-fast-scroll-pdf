@@ -1,7 +1,6 @@
 import "./App.css";
 import React, { SyntheticEvent, useState } from "react";
 import { FastScrollPDF } from "react-fast-scroll-pdf";
-// eslint-disable-next-line import/extensions
 import { GoClippy, GoMarkGithub, GoFilePdf } from "react-icons/go";
 import example1 from "./example1.pdf";
 
