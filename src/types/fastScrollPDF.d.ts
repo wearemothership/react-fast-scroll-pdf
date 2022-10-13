@@ -1,3 +1,5 @@
+declare module "@bundled-es-modules/pdfjs-dist/web/pdf_viewer.js" {}
+
 type TDivType = "place" | "canvas"
 
 interface IPage {
