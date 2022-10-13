@@ -57,6 +57,10 @@ module.exports = {
 		"react/jsx-fragments": [2, "syntax"],
 		"no-use-before-define": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"react/function-component-definition": [2, {
+			namedComponents: "arrow-function",
+			unnamedComponents: "arrow-function"
+		}]
 	},
 	parserOptions: {
 		sourceType: "module"
