@@ -5,8 +5,10 @@ import "./index.css";
 import App from "./App";
 
 const container = document.getElementById("root");
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const root = createRoot(container!);
+if (!container) {
+	throw new Error("No Root Container");
+}
+const root = createRoot(container);
 root.render(
 	<React.StrictMode>
 		<App />
