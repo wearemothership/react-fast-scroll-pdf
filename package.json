@@ -92,7 +92,8 @@
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "default": "./dist/index.module.js"
+      "default": "./dist/index.module.js",
+      "types": "./dist/index.d.ts"
     }
   }
 }
