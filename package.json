@@ -91,9 +91,9 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
-      "default": "./dist/index.module.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.module.js"
     }
   }
 }
