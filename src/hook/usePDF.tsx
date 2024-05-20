@@ -71,7 +71,6 @@ const usePDF = ({
 				try {
 					pageRendering.current = true;
 					const page = await pdfDoc.getPage(num);
-					page.cleanupAfterRender = true;
 					// kill the render early if Q cleared
 					if 	(renderQueue.current.length === 0) {
 						pageRendering.current = false;
