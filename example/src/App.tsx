@@ -1,7 +1,8 @@
 import "./App.css";
 import React, { SyntheticEvent, useState } from "react";
 import { FastScrollPDF } from "react-fast-scroll-pdf";
-import { GoClippy, GoMarkGithub, GoFilePdf } from "react-icons/go";
+import { FaGithub, FaFilePdf } from "react-icons/fa";
+import { GoRepo } from "react-icons/go";
 import example1 from "./example1.pdf";
 
 interface IExampleFileButton {
@@ -17,7 +18,7 @@ const ExampleFileButton = ({
 	const selected = fileName === selectedFile;
 	return (
 		<button type="button" onClick={() => loadFile(fileName, file)} className={selected ? "selected" : ""}>
-			<GoFilePdf />
+			<FaFilePdf />
 			{fileName}
 		</button>
 	);
@@ -82,7 +83,7 @@ const App = (): JSX.Element => {
 							}}
 							className="yellow"
 						>
-							<GoMarkGithub />
+							<FaGithub />
 							View on Github
 						</button>
 						<button
@@ -90,7 +91,7 @@ const App = (): JSX.Element => {
 							className="blue"
 							onClick={copyText}
 						>
-							<GoClippy />
+							<GoRepo />
 							npm install --save react-fast-scroll-pdf
 						</button>
 						{copied && <small>Copied…</small>}

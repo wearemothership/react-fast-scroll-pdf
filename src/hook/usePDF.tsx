@@ -1,23 +1,21 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable import/no-unresolved */
 // @ts-ignore
-import { PDFLinkService, AnnotationLayer, GlobalWorkerOptions } from "pdfjs-dist/web/pdf_viewer";
+import * as pdfjsLib from "pdfjs-dist";
+import "pdfjs-dist/build/pdf.worker.mjs";
+// @ts-ignore
+import { PDFLinkService, AnnotationLayer, GlobalWorkerOptions } from "pdfjs-dist/web/pdf_viewer.mjs";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo
 } from "react";
 import _ from "lodash";
-import { PDFDocumentProxy, PDFPageProxy, getDocument } from "pdfjs-dist/types/src/display/api";
+import { DocumentInitParameters, PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import { PageViewport } from "pdfjs-dist/types/src/display/display_utils";
 import { produce } from "immer";
 import parse from "html-react-parser";
 import PDFPage from "../components/PDFPage";
 import PlaceholderPage from "../components/PlaceholderPage";
-
-interface IPDFJSLib {
-	AnnotationLayer: AnnotationLayer,
-	GlobalWorkerOptions: GlobalWorkerOptions,
-	getDocument: typeof getDocument
-}
+import { IUsePDF, TUsePDF } from "../types/fastScrollPDF";
 
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
@@ -51,10 +49,9 @@ const usePDF = ({
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
 	const [pages, setPages] = useState<(JSX.Element | undefined)[]>([]);
 	const scaleRef = useRef(1);
-	const prevSource = useRef();
+	const prevSource = useRef<DocumentInitParameters>();
 	const viewportRef = useRef<PageViewport>();
 	const renderQueue = useRef<number[]>([]);
-	const pdfjsLib = useRef<Partial<IPDFJSLib>>({});
 	const pageCanvasRef = useRef(document.createElement("canvas"));
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
@@ -71,7 +68,6 @@ const usePDF = ({
 				try {
 					pageRendering.current = true;
 					const page = await pdfDoc.getPage(num);
-					page.cleanupAfterRender = true;
 					// kill the render early if Q cleared
 					if 	(renderQueue.current.length === 0) {
 						pageRendering.current = false;
@@ -108,12 +104,21 @@ const usePDF = ({
 							annotationDiv.id = `annot${num}`;
 							annotationDiv.className = "annotationLayer";
 
-							pdfjsLib.current.AnnotationLayer.render({
+							const layer = new pdfjsLib.AnnotationLayer({
 								viewport: viewport.clone({ dontFlip: true }),
 								div: annotationDiv,
-								annotations: annotationData,
+								accessibilityManager: null,
+								annotationCanvasMap: null,
 								page,
-								linkService
+								annotationEditorUIManager: null
+							});
+							layer.render({
+								viewport: viewport.clone({ dontFlip: true }),
+								div: annotationDiv,
+								page,
+								linkService,
+								annotations: annotationData,
+								renderForms: false
 							});
 						}
 
@@ -177,7 +182,8 @@ const usePDF = ({
 		if (viewer && scrollContainer) {
 			const { children } = viewer ?? {};
 			for (let i = 0; i < children.length; i += 1) {
-				if (children[i].offsetTop <= scrollContainer.scrollTop + 33) {
+				const child = children[i];
+				if (child instanceof HTMLElement && child.offsetTop <= scrollContainer.scrollTop + 33) {
 					currPage = i + 1;
 				}
 			}
@@ -273,33 +279,25 @@ const usePDF = ({
 			renderQueue.current.length = 0;
 			prevSource.current = source;
 			setPages([]);
-			// @ts-ignore
-			import("pdfjs-dist/build/pdf").then((lib) => {
-				pdfjsLib.current = lib as IPDFJSLib;
-				// @ts-ignore
-				import("pdfjs-dist/build/pdf.worker.entry")
-					.then((pdfjsWorker) => {
-						pdfjsLib.current.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+			pdfjsLib.GlobalWorkerOptions.workerSrc = "pdfjs-dist/build/pdf.worker.mjs";
 
-						const loadingTask = pdfjsLib.current?.getDocument?.({
-							cMapUrl: CMAP_URL,
-							cMapPacked: true,
-							...source
-						});
-						loadingTask?.promise.then((pdfDocument: PDFDocumentProxy) => {
-							docLoaded.current = true;
-							setPdfDoc(pdfDocument);
-						})
-							.catch((err: Error) => {
-								console.error("Error loading PDF", err);
-								setPages([
-									<div style={{ width: "300px", height: "100px" }} data-type="error">
-										{`Error loading PDF: ${err}`}
-									</div>
-								]);
-							});
-					});
+			const loadingTask = pdfjsLib.getDocument?.({
+				cMapUrl: CMAP_URL,
+				cMapPacked: true,
+				...source
 			});
+			loadingTask?.promise.then((pdfDocument: PDFDocumentProxy) => {
+				docLoaded.current = true;
+				setPdfDoc(pdfDocument);
+			})
+				.catch((err: Error) => {
+					console.error("Error loading PDF", err);
+					setPages([
+						<div style={{ width: "300px", height: "100px" }} data-type="error">
+							{`Error loading PDF: ${err}`}
+						</div>
+					]);
+				});
 		}
 	}, [source, pdfDoc]);
 

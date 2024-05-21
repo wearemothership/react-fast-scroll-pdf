@@ -1,6 +1,7 @@
 import React from "react";
 import Spinner from "../assets/spinner.gif";
 import styles from "./styles/PlaceholderPage.module.css";
+import { IPlaceholderPage } from "../types/fastScrollPDF";
 
 const PlaceholderPage = ({
 	width, height, type = "place", loadingImage = Spinner, spin

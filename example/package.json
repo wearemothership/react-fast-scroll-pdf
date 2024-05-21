@@ -1,20 +1,19 @@
 {
   "name": "react-fast-scroll-pdf-example",
   "homepage": "https://wearemothership.github.io/react-fast-scroll-pdf",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "license": "MIT",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
-    "react": "file:../node_modules/react",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-fast-scroll-pdf": "file:..",
-    "react-icons": "^4.4.0"
+    "react-icons": "^5.2.1"
   },
   "scripts": {
-    "start": "../node_modules/.bin/react-scripts start",
-    "build": "../node_modules/.bin/react-scripts build",
-    "test": "../node_modules/.bin/react-scripts test --env=jsdom"
+    "start": "vite",
+    "build": "tsc && vite build"
   },
   "browserslist": [
     ">0.2%",
@@ -23,6 +22,10 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@types/react-dom": "^18.0.6"
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.11",
+    "vite-tsconfig-paths": "^4.3.2"
   }
 }

@@ -22,7 +22,9 @@ export default {
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
-				"pdfjs-dist/web/pdf_viewer": "pdf_viewer",
+				"pdfjs-dist": "pdfjsLib",
+				"pdfjs-dist/web/pdf_viewer.mjs": "pdf_viewer_mjs",
+				"pdfjs-dist/build/pdf.worker.mjs": "pdf.worker",
 				lodash: "_",
 				immer: "immer",
 				"html-react-parser": "parse"
@@ -36,6 +38,12 @@ export default {
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
+				"pdfjs-dist": "pdfjsLib",
+				"pdfjs-dist/web/pdf_viewer.mjs": "pdf_viewer_mjs",
+				"pdfjs-dist/build/pdf.worker.mjs": "pdf.worker",
+				lodash: "_",
+				immer: "immer",
+				"html-react-parser": "parse"
 			},
 		}
 	],

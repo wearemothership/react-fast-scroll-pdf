@@ -1,4 +1,5 @@
-declare module "@bundled-es-modules/pdfjs-dist/web/pdf_viewer.js" {}
+import { DocumentInitParameters } from "pdfjs-dist/types/src/display/api"
+import { ReactNode, RefObject } from "react"
 
 type TDivType = "place" | "canvas"
 
@@ -9,26 +10,26 @@ interface IPage {
 }
 
 interface IPlaceholderPage extends IPage {
-	loadingImage?: IconDefinition | string,
+	loadingImage?: string,
 	spin?: boolean
 }
 
-interface IPDFPage extends IPage {
+export interface IPDFPage extends IPage {
 	pageNum: number,
 	imageSrc: string,
 	children?: ReactNode
 }
 
-interface IUsePDF {
+export interface IUsePDF {
 	source: DocumentInitParameters,
-	loadingImage?: string,
+	loadingImage: string,
 	spinLoadingImage?: boolean,
 	enableAnnotations?: boolean,
-	viewer?: ReactNode,
-	scrollContainer?: ReactNode
+	viewer?: HTMLDivElement | null,
+	scrollContainer?: HTMLDivElement | null
 }
 
-type TUsePDF = {
+export type TUsePDF = {
 	renderCurrentPage: (force?: boolean) => void,
 	changeZoom: (scale: number) => void,
 	changeZoomStart: (scale: number) => void,
@@ -36,9 +37,9 @@ type TUsePDF = {
 	pages: (JSX.Element | undefined)[]
 }
 
-type TPage = IPlaceholderPage | IPDFPage
+export type TPage = IPlaceholderPage | IPDFPage
 
-interface IZoomButtons {
+export interface IZoomButtons {
 	zoomChangeStart: (zoom: number) => void,
 	zoomChangeEnd: () => void,
 	zoomStep?: number,
@@ -48,17 +49,15 @@ interface IZoomButtons {
 	className?: string
 }
 
-interface IPDFDocument {
-	scrollContainerRef?: MutableRefObject<HTMLDivElement>,
-	viewerRef?: MutableRefObject<HTMLDivElement>,
+export interface IPDFDocument {
+	scrollContainerRef?: RefObject<HTMLDivElement>,
+	viewerRef?: RefObject<HTMLDivElement>,
 	pages: (JSX.Element | undefined)[],
 	className?: string,
 	rowGap?: string
 }
 
-interface IFastScrollPDF extends IUsePDF {
+export interface IFastScrollPDF extends IUsePDF {
 	hideZoom?: boolean
 	className?: string
 }
-
-declare module "*.gif"
