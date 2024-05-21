@@ -17,7 +17,6 @@
   "main": "dist/index.js",
   "module": "dist/index.module.js",
   "types": "dist/index.d.ts",
-  "type": "module",
   "engines": {
     "node": ">=18",
     "npm": ">=9"
