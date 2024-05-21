@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./styles/PDFDocument.module.css";
+import { IPDFDocument } from "../types/fastScrollPDF";
 
 const PDFDocument = ({
 	scrollContainerRef, viewerRef, pages, className, rowGap

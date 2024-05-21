@@ -3,11 +3,10 @@
     "module": "esnext",
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
-	"types": ["vite/client"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "preserve",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -25,12 +24,11 @@
     "rootDir": "src"
   },
   "include": [
-    "src"
+    "src",
+	"src/**/*.d.ts",
+	"*.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    "example"
+    "node_modules"
   ]
 }

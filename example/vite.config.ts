@@ -7,6 +7,11 @@ export default defineConfig({
 	// depending on your application, base can also be "/"
 	base: "",
 	plugins: [react(), viteTsconfigPaths()],
+	optimizeDeps: {
+		esbuildOptions: {
+			target: "esnext",
+		},
+	},
 	server: {
 		// this ensures that the browser opens upon server start
 		open: true,

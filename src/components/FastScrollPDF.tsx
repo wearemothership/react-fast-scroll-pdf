@@ -4,13 +4,14 @@ import ZoomButtons from "./ZoomButtons";
 import PDFDocument from "./PDFDocument";
 import usePDF from "../hook/usePDF";
 import styles from "./styles/FastScrollPDF.module.css";
+import { IFastScrollPDF } from "../types/fastScrollPDF";
 
 const FastScrollPDF = ({
-	source, loadingImage, enableAnnotations, className, spinLoadingImage, hideZoom = false
+	source, loadingImage, enableAnnotations = true, className, spinLoadingImage = false, hideZoom = false
 }: IFastScrollPDF): JSX.Element => {
 	const [zoom, setZoom] = useState(1);
-	const scrollContainerRef = useRef<HTMLDivElement>();
-	const viewerRef = useRef<HTMLDivElement>();
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
+	const viewerRef = useRef<HTMLDivElement>(null);
 	const {
 		pages, changeZoomStart, changeZoomEnd, renderCurrentPage
 	} = usePDF({

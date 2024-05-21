@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styles from "./styles/ZoomButtons.module.css";
+import { IZoomButtons } from "../types/fastScrollPDF";
 
 enum ZoomDirection {
 	In = 1,

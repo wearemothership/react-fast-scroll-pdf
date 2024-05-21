@@ -1,6 +1,6 @@
 {
   "name": "react-fast-scroll-pdf",
-  "version": "1.1.0",
+  "version": "1.0.3",
   "description": "Image-based PDF viewer using pdfjs",
   "author": "wearemothership",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "npm": ">=9"
   },
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "rimraf ./dist && rollup -c && tsc -d --emitDeclarationOnly --noEmit false --declarationDir dist",
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
@@ -39,8 +39,22 @@
     "react": "^18.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-transform-react-jsx": "^7.23.4",
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-react": "^7.24.1",
+    "@babel/runtime": "^7.24.5",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-eslint": "^9.0.5",
+    "@rollup/plugin-image": "^3.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/lodash": "^4.17.4",
     "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0",
     "@types/react-html-parser": "^2.0.6",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
@@ -55,10 +69,13 @@
     "postcss": "^8.4.38",
     "react": "^18.3.1",
     "rimraf": "^5.0.7",
+    "rollup": "^4.17.2",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
     "tslib": "^2.6.2",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.11",
-    "vite-tsconfig-paths": "^4.3.2"
+    "typescript": "^5.4.5"
   },
   "babel": {
     "presets": [
