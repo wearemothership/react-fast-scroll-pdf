@@ -32,6 +32,11 @@
 	left: 0;
 }
 
+.viewer :global(.annotationLayer) section {
+	border: "none" !important;
+	padding: 0 !important;
+}
+
 .viewer :global(.linkAnnotation) {
 	position: absolute;
 }

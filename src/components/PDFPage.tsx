@@ -1,5 +1,5 @@
 import React from "react";
-import { IPDFPage } from "../types/fastScrollPDF";
+import type { IPDFPage } from "../types/fastScrollPDF";
 
 const PDFPage = ({
 	width, height, pageNum, imageSrc, children, type = "canvas"

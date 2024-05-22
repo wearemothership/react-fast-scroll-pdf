@@ -1,5 +1,5 @@
-import { DocumentInitParameters } from "pdfjs-dist/types/src/display/api"
-import { ReactNode, RefObject } from "react"
+import { DocumentInitParameters } from "pdfjs-dist/types/src/display/api";
+import { ReactElement, RefObject } from "react";
 
 type TDivType = "place" | "canvas"
 
@@ -17,7 +17,7 @@ interface IPlaceholderPage extends IPage {
 export interface IPDFPage extends IPage {
 	pageNum: number,
 	imageSrc: string,
-	children?: ReactNode
+	children?: ReactElement | null
 }
 
 export interface IUsePDF {
