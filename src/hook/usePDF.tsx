@@ -4,7 +4,7 @@
 import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/build/pdf.worker.mjs";
 // @ts-ignore
-import { PDFLinkService, AnnotationLayer, GlobalWorkerOptions } from "pdfjs-dist/web/pdf_viewer.mjs";
+import { PDFLinkService } from "pdfjs-dist/web/pdf_viewer.mjs";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo
 } from "react";
@@ -15,7 +15,7 @@ import { produce } from "immer";
 import parse from "html-react-parser";
 import PDFPage from "../components/PDFPage";
 import PlaceholderPage from "../components/PlaceholderPage";
-import { IUsePDF, TUsePDF } from "../types/fastScrollPDF";
+import type { IUsePDF, TUsePDF } from "../types/fastScrollPDF";
 
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
@@ -82,7 +82,9 @@ const usePDF = ({
 					const renderContext = {
 						canvasContext: ctx,
 						viewport,
-						enableWebGL: true
+						enableWebGL: true,
+						intent: "any",
+						annotationMode: pdfjsLib.AnnotationMode.ENABLE
 					};
 
 					try {
@@ -105,13 +107,14 @@ const usePDF = ({
 							annotationDiv.className = "annotationLayer";
 
 							const layer = new pdfjsLib.AnnotationLayer({
-								viewport: viewport.clone({ dontFlip: true }),
 								div: annotationDiv,
 								accessibilityManager: null,
 								annotationCanvasMap: null,
+								annotationEditorUIManager: null,
 								page,
-								annotationEditorUIManager: null
+								viewport
 							});
+
 							layer.render({
 								viewport: viewport.clone({ dontFlip: true }),
 								div: annotationDiv,
@@ -120,6 +123,11 @@ const usePDF = ({
 								annotations: annotationData,
 								renderForms: false
 							});
+
+							annotationDiv.style.top = pageCanvasRef.current.style.top;
+							annotationDiv.style.left = pageCanvasRef.current.style.left;
+							annotationDiv.style.width = "100%";
+							annotationDiv.style.height = "100%";
 						}
 
 						setPages((oldPages) => produce(oldPages, (draft) => {
@@ -132,7 +140,7 @@ const usePDF = ({
 									imageSrc={pageCanvasRef.current.toDataURL("image/png")}
 									key={`page${num}`}
 								>
-									{ enableAnnotations ? parse(annotationDiv.outerHTML) : null}
+									{ enableAnnotations ? parse(annotationDiv.outerHTML) : null }
 								</PDFPage>
 							);
 						}));
