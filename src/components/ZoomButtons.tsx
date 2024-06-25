@@ -165,7 +165,7 @@ const ZoomButtons = ({
 	}, [zoomStart]);
 
 	const zoomPos = zoomStateRef.current.pos;
-	const style = `${className} ${styles.zoomButton}`;
+	const style = [styles.zoomButton, className].filter((b) => !!b).join(" ");
 
 	return (
 		<div className={styles.buttonGroup}>
