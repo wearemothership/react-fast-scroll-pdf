@@ -355,7 +355,9 @@ const usePDF = ({
 		changeZoom,
 		changeZoomStart,
 		changeZoomEnd,
-		pages
+		pages,
+		viewportWidth: viewportRef.current?.width,
+		viewportHeight: viewportRef.current?.height
 	}), [changeZoom, changeZoomEnd, changeZoomStart, pages, renderCurrentPage]);
 };
 

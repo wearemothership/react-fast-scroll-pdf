@@ -32,6 +32,7 @@ const App = (): JSX.Element => {
 	const [file, setFile] = useState<Uint8Array>();
 	const [fileName, setFileName] = useState<string>();
 	const [hideZoom, setHideZoom] = useState<boolean>(false);
+	const [showFitPage, setShowFitPage] = useState<boolean>(false);
 	const sourceOptions = {
 		data: file
 	};
@@ -68,7 +69,7 @@ const App = (): JSX.Element => {
 			setFileName(newFileName);
 		}));
 	};
-
+	console.log("SS", showFitPage);
 	return (
 		<div className="App">
 			<section>
@@ -110,9 +111,17 @@ const App = (): JSX.Element => {
 			<section>
 				<div className="flex flexCenterRow flexSpaced100">
 					<label htmlFor="hideZoom">
-						<small>Zoom Buttons: </small>
+						<small>Hide Zoom Buttons: </small>
 						<input name="hideZoom" type="checkbox" checked={hideZoom} onChange={() => setHideZoom(!hideZoom)} />
 					</label>
+				</div>
+				<div className="flex flexCenterRow flexSpaced100">
+					{ !hideZoom ? (
+						<label htmlFor="showFitPage">
+							<small>Show Fit Page: </small>
+							<input name="showFitPage" type="checkbox" checked={showFitPage} onChange={() => setShowFitPage(!showFitPage)} />
+						</label>
+					) : null }
 				</div>
 			</section>
 
@@ -124,6 +133,7 @@ const App = (): JSX.Element => {
 								className="fastScroll"
 								source={sourceOptions}
 								hideZoom={hideZoom}
+								showFitPage={showFitPage}
 							/>
 						)
 						: null }

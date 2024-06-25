@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import styles from "./styles/ZoomButtons.module.css";
-import { IZoomButtons } from "../types/fastScrollPDF";
+import type { IZoomButtons } from "../types/fastScrollPDF";
 
 enum ZoomDirection {
 	In = 1,
@@ -12,7 +12,8 @@ interface IZoomState {
 	pos: number
 	direction: ZoomDirection
 	animReq?: number,
-	lastTimestamp: number
+	lastTimestamp: number,
+	fitPage: boolean
 }
 
 interface IZoomButton {
@@ -48,6 +49,7 @@ const ZoomButton = ({
 const ZoomButtons = ({
 	zoomChangeStart,
 	zoomChangeEnd,
+	zoomFit,
 	zoomStep = 1, // change per second
 	zoomStart = 1,
 	minZoom = 0.1,
@@ -57,10 +59,11 @@ const ZoomButtons = ({
 	const zoomStateRef = useRef<IZoomState>({
 		pos: zoomStart || 1,
 		direction: ZoomDirection.None,
-		lastTimestamp: 0
+		lastTimestamp: 0,
+		fitPage: false
 	} ?? 1);
 
-	const doZoom = (timestamp: number) => {
+	const doZoom = useCallback((timestamp: number) => {
 		const { pos, direction, lastTimestamp } = zoomStateRef.current;
 		if (direction === ZoomDirection.None) {
 			return;
@@ -76,7 +79,8 @@ const ZoomButtons = ({
 		zoomStateRef.current = {
 			pos: zoom,
 			direction,
-			lastTimestamp: timestamp
+			lastTimestamp: timestamp,
+			fitPage: false
 		};
 
 		if (zoom !== pos) {
@@ -97,9 +101,9 @@ const ZoomButtons = ({
 			zoomStateRef.current.direction = ZoomDirection.None;
 			zoomChangeEnd();
 		}
-	};
+	}, [maxZoom, minZoom, zoomChangeEnd, zoomChangeStart, zoomStep]);
 
-	const setZoomDirection = (newDirection: ZoomDirection) => {
+	const setZoomDirection = useCallback((newDirection: ZoomDirection) => {
 		const { direction, animReq, lastTimestamp } = zoomStateRef.current;
 		if (newDirection === direction) {
 			return;
@@ -127,13 +131,27 @@ const ZoomButtons = ({
 			zoomStateRef.current.lastTimestamp = 0;
 			doZoom(0);
 		}
-	};
+	}, [doZoom, zoomChangeEnd]);
 
-	const zoomInStart = () => setZoomDirection(ZoomDirection.In);
+	const zoomInStart = useCallback(() => setZoomDirection(ZoomDirection.In), [setZoomDirection]);
 
-	const zoomOutStart = () => setZoomDirection(ZoomDirection.Out);
+	const zoomOutStart = useCallback(() => setZoomDirection(ZoomDirection.Out), [setZoomDirection]);
 
-	const zoomEnd = () => setZoomDirection(ZoomDirection.None);
+	const zoomEnd = useCallback(() => setZoomDirection(ZoomDirection.None), [setZoomDirection]);
+
+	const fitPage = useCallback(() => {
+		if (zoomFit) {
+			const newZoom = zoomFit();
+			if (newZoom) {
+				zoomStateRef.current = {
+					pos: newZoom,
+					direction: ZoomDirection.None,
+					lastTimestamp: 0,
+					fitPage: true
+				};
+			}
+		}
+	}, [zoomFit]);
 
 	useEffect(() => {
 		zoomStateRef.current = { ...zoomStateRef.current, pos: zoomStart };
@@ -160,6 +178,13 @@ const ZoomButtons = ({
 			>
 				<b>-</b>
 			</ZoomButton>
+			{ zoomFit
+				? (
+					<button onClick={fitPage} type="button" disabled={zoomStateRef.current.fitPage}>
+						<b>Fit</b>
+					</button>
+				)
+				: null }
 		</div>
 	);
 };
