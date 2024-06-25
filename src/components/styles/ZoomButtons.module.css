@@ -8,22 +8,19 @@
 	margin-bottom: 0;
 	background: none;
 	padding: 10px;
-	background-color: rgb(240, 240, 240);
-	color: rgb(0, 0, 0);
 	font-weight: 600;
 	text-align: center;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	transition: 0.2s all ease-out;
-	flex: 1;
 }
 
 .buttonGroup {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-end;
-	width: 110px;
+	justify-content: flex-end;
 	margin-top: 3px;
 	margin-bottom: 3px;
 	margin-left: auto;

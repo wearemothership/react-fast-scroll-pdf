@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, {
+	ReactNode, useCallback, useEffect, useRef
+} from "react";
 import styles from "./styles/ZoomButtons.module.css";
-import { IZoomButtons } from "../types/fastScrollPDF";
+import type { IZoomButtons } from "../types/fastScrollPDF";
 
 enum ZoomDirection {
 	In = 1,
@@ -12,19 +14,20 @@ interface IZoomState {
 	pos: number
 	direction: ZoomDirection
 	animReq?: number,
-	lastTimestamp: number
+	lastTimestamp: number,
+	fitPage: boolean
 }
 
 interface IZoomButton {
-	style: string
+	className: string
 	disabled: boolean
 	start: () => void
 	end: () => void
-	children: JSX.Element
+	children: ReactNode
 }
 
 const ZoomButton = ({
-	style,
+	className,
 	disabled,
 	start,
 	end,
@@ -32,7 +35,7 @@ const ZoomButton = ({
 }:IZoomButton): JSX.Element => (
 	<button
 		type="button"
-		className={style}
+		className={className}
 		disabled={disabled}
 		onTouchStart={start}
 		onTouchCancel={end}
@@ -48,19 +51,27 @@ const ZoomButton = ({
 const ZoomButtons = ({
 	zoomChangeStart,
 	zoomChangeEnd,
+	zoomFit,
 	zoomStep = 1, // change per second
 	zoomStart = 1,
 	minZoom = 0.1,
 	maxZoom = 5,
-	className
+	buttonClasses,
+	groupClasses,
+	icons = {
+		zoomIn: <b>+</b>,
+		zoomOut: <b>-</b>,
+		fitPage: <b>Fit</b>
+	}
 }: IZoomButtons): JSX.Element => {
 	const zoomStateRef = useRef<IZoomState>({
 		pos: zoomStart || 1,
 		direction: ZoomDirection.None,
-		lastTimestamp: 0
+		lastTimestamp: 0,
+		fitPage: false
 	} ?? 1);
 
-	const doZoom = (timestamp: number) => {
+	const doZoom = useCallback((timestamp: number) => {
 		const { pos, direction, lastTimestamp } = zoomStateRef.current;
 		if (direction === ZoomDirection.None) {
 			return;
@@ -76,7 +87,8 @@ const ZoomButtons = ({
 		zoomStateRef.current = {
 			pos: zoom,
 			direction,
-			lastTimestamp: timestamp
+			lastTimestamp: timestamp,
+			fitPage: false
 		};
 
 		if (zoom !== pos) {
@@ -97,9 +109,9 @@ const ZoomButtons = ({
 			zoomStateRef.current.direction = ZoomDirection.None;
 			zoomChangeEnd();
 		}
-	};
+	}, [maxZoom, minZoom, zoomChangeEnd, zoomChangeStart, zoomStep]);
 
-	const setZoomDirection = (newDirection: ZoomDirection) => {
+	const setZoomDirection = useCallback((newDirection: ZoomDirection) => {
 		const { direction, animReq, lastTimestamp } = zoomStateRef.current;
 		if (newDirection === direction) {
 			return;
@@ -127,39 +139,64 @@ const ZoomButtons = ({
 			zoomStateRef.current.lastTimestamp = 0;
 			doZoom(0);
 		}
-	};
+	}, [doZoom, zoomChangeEnd]);
 
-	const zoomInStart = () => setZoomDirection(ZoomDirection.In);
+	const zoomInStart = useCallback(() => setZoomDirection(ZoomDirection.In), [setZoomDirection]);
 
-	const zoomOutStart = () => setZoomDirection(ZoomDirection.Out);
+	const zoomOutStart = useCallback(() => setZoomDirection(ZoomDirection.Out), [setZoomDirection]);
 
-	const zoomEnd = () => setZoomDirection(ZoomDirection.None);
+	const zoomEnd = useCallback(() => setZoomDirection(ZoomDirection.None), [setZoomDirection]);
+
+	const fitPage = useCallback(() => {
+		if (zoomFit) {
+			const newZoom = zoomFit();
+			if (newZoom) {
+				zoomStateRef.current = {
+					pos: newZoom,
+					direction: ZoomDirection.None,
+					lastTimestamp: 0,
+					fitPage: true
+				};
+			}
+		}
+	}, [zoomFit]);
 
 	useEffect(() => {
 		zoomStateRef.current = { ...zoomStateRef.current, pos: zoomStart };
 	}, [zoomStart]);
 
 	const zoomPos = zoomStateRef.current.pos;
-	const style = `${className} ${styles.zoomButton}`;
 
 	return (
-		<div className={styles.buttonGroup}>
+		<div className={groupClasses ?? styles.buttonGroup}>
 			<ZoomButton
-				style={style}
+				className={buttonClasses ?? styles.zoomButton}
 				disabled={zoomPos >= maxZoom}
 				start={zoomInStart}
 				end={zoomEnd}
 			>
-				<b>+</b>
+				{ icons.zoomIn }
 			</ZoomButton>
 			<ZoomButton
-				style={style}
+				className={buttonClasses ?? styles.zoomButton}
 				disabled={zoomPos <= minZoom}
 				start={zoomOutStart}
 				end={zoomEnd}
 			>
-				<b>-</b>
+				{ icons.zoomOut }
 			</ZoomButton>
+			{ zoomFit
+				? (
+					<button
+						className={buttonClasses ?? styles.zoomButton}
+						onClick={fitPage}
+						type="button"
+						disabled={zoomStateRef.current.fitPage}
+					>
+						{ icons.fitPage }
+					</button>
+				)
+				: null }
 		</div>
 	);
 };
