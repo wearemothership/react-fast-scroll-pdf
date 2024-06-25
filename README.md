@@ -292,6 +292,7 @@ These two components can be accessed via an import and may be useful if you wish
 - maxZoom: (optional) the maximum amount of zoom (default: 5)
 - buttonClasses: (optional) a CSS class to apply to the buttons.
 - groupClasses: (optional) a CSS class to apply to the div that groups the buttons.
+- selectedClass: (optional) a CSS class to apply to selected buttons.
 - icons: (optional) an object of icons/text to display on each button: { zoomIn: ReactNode, zoomOut: ReactNode, fitPage: ReactNode }
 
 #### PDFPage

@@ -51,6 +51,7 @@ export interface IZoomButtons {
 	maxZoom?: number,
 	buttonClasses?: string,
 	groupClasses?: string,
+	selectedClass?: string
 	icons?: {
 		zoomIn?: ReactNode,
 		zoomOut?: ReactNode,
