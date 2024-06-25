@@ -32,7 +32,7 @@ git clone https://github.com/wearemothership/react-fast-scroll-pdf
 
 
 ### Demo
-We have provied some demos of how this can be used in your project.
+We have provided some demos of how this can be used in your project.
 
 #### Online demo
 - [Simple](https://wearemothership.github.io/react-fast-scroll-pdf/)
@@ -96,7 +96,7 @@ This is something that you may wish to do if you want to apply your own styles o
 components along with the hook to give you lots of control over how you display the PDF. 
 
 **Note:**
-For reloading the PDF effeciently you should pass in refs to the PDFDocument component and then use those refs for changeZoom. If you choose not to use the refs, it will all still work 
+For reloading the PDF efficiently you should pass in refs to the PDFDocument component and then use those refs for changeZoom. If you choose not to use the refs, it will all still work 
 but instead of reloading from the currently active page, it will reload from page 1.
 ```jsx
 import React, { SyntheticEvent, useState } from "react";
@@ -109,7 +109,19 @@ const App = (): JSX.Element => {
 	};
 	const scrollContainerRef = useRef();
 	const viewerRef = useRef();
-	const { pages, changeZoom } = usePDF({ source });
+	const {
+		pages,
+		changeZoomStart,
+		changeZoomEnd,
+		renderCurrentPage
+	} = usePDF({
+			source,
+			scrollContainer: scrollContainerRef.current,
+			viewer: viewerRef.current
+		});
+	
+	// Recommend debouncing this code, e.g. lodash debounce.
+	const scrollDocument = () => renderCurrentPage();
 
 	const fileChanged = (ev: SyntheticEvent<HTMLInputElement>) => {
 		const target = ev.target as HTMLInputElement;
@@ -126,16 +138,40 @@ const App = (): JSX.Element => {
 		}
 	};
 
-	const zoomChange = (newZoom: number) => {
-		changeZoom({
-			scale: newZoom, viewer: viewerRef.current, scrollContainer: scrollContainerRef.current
-		});
-	};
+	const zoomChangeStart = useCallback((newZoom: number) => {
+		// This causes the pages to zoom in, but in low quality.
+		changeZoomStart(newZoom);
+	}, [changeZoomStart]);
+
+	const zoomChangeEnd = useCallback(() => {
+		// This tells the renderer to recreate all of the images.
+		changeZoomEnd();
+	}, [changeZoomEnd])
+
+	// Allows the page to be zoomed to fit to the page width
+	// This is OPTIONAL
+	const fitPage = useCallback(() => {
+		if (viewportWidth && scrollContainerRef.current) {
+			const initial = viewportWidth / zoom;
+			const scale = (scrollContainerRef.current.offsetWidth / initial) * 0.95;
+			doZoom(scale);
+			changeZoomEnd();
+			return scale;
+		}
+		return undefined;
+	}, [viewportWidth, doZoom, changeZoomEnd, zoom]);
+
+	useEffect(() => {
+		const oldRef = scrollContainerRef.current;
+		scrollContainerRef.current?.addEventListener("scroll", scrollDocument);
+
+		return () => oldRef?.removeEventListener("scroll", scrollDocument);
+	}, [scrollDocument]);
 
 	return (
 		<div className="App">
 			<input type="file" onChange={fileChanged} />
-			<ZoomButtons zoomChange={zoomChange} />
+			<ZoomButtons zoomChangeStart={zoomChangeStart} zoomChangeEnd={zoomChangeEnd} zoomFit={fitPage} />
 			<PDFDocument scrollContainerRef={scrollContainerRef} viewerRef={viewerRef} pages={pages} />
 		</div>
 	);
@@ -152,39 +188,49 @@ import React, { SyntheticEvent, useRef, useState } from 'react';
 import { usePDF } from "react-fast-scroll-pdf";
 
 const App = (): JSX.Element => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const viewerRef = useRef<HTMLDivElement>(null);
 	const [zoom, setZoom] = useState<number>(1);
 	const [file, setFile] = useState<Uint8Array>();
 	const sourceOptions = {
 		data: file
 	}
-	const { pages, changeZoom } = usePDF({
-		source: sourceOptions
+	const {
+		pages,
+		changeZoomStart,
+		changeZoomEnd,
+		renderCurrentPage
+	} = usePDF({
+		source: sourceOptions,
+		scrollContainer: scrollContainerRef.current,
+		viewer: viewerRef.current
 	})
 	const ZOOM_CHANGE: number = 0.1;
 
-	const zoomIn = () => {
+	// Recommend debouncing this, e.g. lodash debounce.
+	const scrollDocument = () => renderCurrentPage();
+
+	const zoomIn = useCallback(() => {
 		const newZoom = zoom + ZOOM_CHANGE;
 		if (newZoom > 0) {
 			setZoom(newZoom);
-			changeZoom({
-				scale: newZoom, viewer: viewerRef.current, scrollContainer: scrollContainerRef.current
-			});
+			changeZoomStart(newStart);
 		}
-	}
+	}, [changeZoomStart]);
 
-	const zoomOut = () => {
+	const zoomOut = useCallback(() => {
 		const newZoom = zoom - ZOOM_CHANGE;
 		if (newZoom < 2) {
 			setZoom(newZoom);
-			changeZoom({
-				scale: newZoom, viewer: viewerRef.current, scrollContainer: scrollContainerRef.current
-			});
+			changeZoomStart(newZoom);
 		}
-	}
+	}, [changeZoomStart]);
 
-	const fileChanged = (ev: SyntheticEvent<HTMLInputElement>) => {
+	const zoomEnd = useCallback(() => {
+		changeZoomEnd();
+	}, [changeZoomEnd]);
+
+	const fileChanged = useCallback((ev: SyntheticEvent<HTMLInputElement>) => {
 		const target = ev.target as HTMLInputElement;
 		const file = target.files?.[0]
 		if (file) {
@@ -197,7 +243,7 @@ const App = (): JSX.Element => {
 			};
 			fileReader.readAsArrayBuffer(file);
 		}
-	}
+	}, [])
 
 	return (
 		<div className="App">
@@ -207,8 +253,8 @@ const App = (): JSX.Element => {
 					{pages}
 				</div>
 			</div>
-			<button type="button" onClick={zoomIn}>+</button>
-			<button type="button" onClick={zoomOut}>-</button>
+			<button type="button" onMouseDown={zoomIn} onMouseUp={zoomEnd}>+</button>
+			<button type="button" onMouseDown={zoomOut} onMouseUp={zoomEnd}>-</button>
 		</div>
 	);
 }
@@ -223,11 +269,12 @@ These two components can be accessed via an import and may be useful if you wish
 #### Props
 #### FastScrollPDF
 - source: (required) a PDFJS source object (see below)
-- loadingImage: (optional) an image that will be spun in the middle of loading pages (default: spinner gif - courtesy of <a href="https://icons8.com/" targe="_blank">icons8</a>).
+- loadingImage: (optional) an image that will be spun in the middle of loading pages (default: spinner gif - courtesy of <a href="https://icons8.com/" target="_blank">icons8</a>).
 - spinLoadingImage: (optional) Whether to spin the loading image (default: false)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true),
 - className: (optional) a CSS class to apply to the main window. (default: none),
-- hideZoom: (optional) if true, the zoom buttons are hidden. (default: false)
+- hideZoom: (optional) if true, the zoom buttons are hidden. (default: false),
+- showFitPage: (optional) if true, the Fit to Page button is shown. (default: false)
 
 #### PDFDocument
 - pages: (required) The list of pages returned from the usePDF hook.
@@ -240,9 +287,13 @@ These two components can be accessed via an import and may be useful if you wish
 - zoomChange: (required) a function that accepts a zoom number and carried out the required zoom action.
 - zoomStep: (optional) the increment to change the zoom amount by per second (plus or minus). (default: 1)
 - zoomStart: (optional) the starting zoom. (default: 1)
+- zoomFit: (optional) the function called that should calculate and return the new scaling factor.
 - minZoom: (optional) the minimum amount of zoom (default: 0.1)
 - maxZoom: (optional) the maximum amount of zoom (default: 5)
-- className: (optional) a CSS class to apply to the buttons.
+- buttonClasses: (optional) a CSS class to apply to the buttons.
+- groupClasses: (optional) a CSS class to apply to the div that groups the buttons.
+- selectedClass: (optional) a CSS class to apply to selected buttons.
+- icons: (optional) an object of icons/text to display on each button: { zoomIn: ReactNode, zoomOut: ReactNode, fitPage: ReactNode }
 
 #### PDFPage
 - width: (required) the width of the page in px.
@@ -264,6 +315,8 @@ These two components can be accessed via an import and may be useful if you wish
 - loadingImage: (optional) an image that will be spun in the middle of loading pages (default: Font Awesome Spinner).
 - spinLoadingImage: (optional) Whether to spin the loading image (default: false)
 - enableAnnotations: (optional) whether to create an annotations layer. (default: true)
+- scrollContainer: (optional) Reference to the HTMLDivElement used as a scroll container for the viewer
+- viewerContainer: (optional) Reference to the HTMLDivElement used as the viewer.
 
 #### usePDF return
 - pages: a fragment of Placeholder pages or PDFPages (as images) as div & img elements
@@ -271,6 +324,8 @@ These two components can be accessed via an import and may be useful if you wish
 - changeZoomStart: Call this function when zooming first starts. (scale: number) => void
 - changeZoomEnd: call this function when zooming ends. () => void
 - renderCurrentPage: Render the page currently in view (and the next page). If the page is already rendered nothing happens unless 'force' is true. (force: boolean) => void
+- viewportWidth: (number) The current width of the viewport (a page)
+- viewportHeight: (number) The current height of the viewport (a page)
 
 ### PDF.js source object
 You can find details of the options available on the source object <a href="https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib.html#~DocumentInitParameters" target="_blank">here</a>.
