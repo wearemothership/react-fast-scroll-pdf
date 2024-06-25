@@ -19,7 +19,7 @@ interface IZoomState {
 }
 
 interface IZoomButton {
-	style: string
+	className: string
 	disabled: boolean
 	start: () => void
 	end: () => void
@@ -27,7 +27,7 @@ interface IZoomButton {
 }
 
 const ZoomButton = ({
-	style,
+	className,
 	disabled,
 	start,
 	end,
@@ -35,7 +35,7 @@ const ZoomButton = ({
 }:IZoomButton): JSX.Element => (
 	<button
 		type="button"
-		className={style}
+		className={className}
 		disabled={disabled}
 		onTouchStart={start}
 		onTouchCancel={end}
@@ -165,12 +165,12 @@ const ZoomButtons = ({
 	}, [zoomStart]);
 
 	const zoomPos = zoomStateRef.current.pos;
-	const style = [styles.zoomButton, className].filter((b) => !!b).join(" ");
+	const buttonClasses = `${className ?? styles.zoomButton}`;
 
 	return (
 		<div className={styles.buttonGroup}>
 			<ZoomButton
-				style={style}
+				className={buttonClasses}
 				disabled={zoomPos >= maxZoom}
 				start={zoomInStart}
 				end={zoomEnd}
@@ -178,7 +178,7 @@ const ZoomButtons = ({
 				{ icons.zoomIn }
 			</ZoomButton>
 			<ZoomButton
-				style={style}
+				className={buttonClasses}
 				disabled={zoomPos <= minZoom}
 				start={zoomOutStart}
 				end={zoomEnd}
@@ -187,7 +187,12 @@ const ZoomButtons = ({
 			</ZoomButton>
 			{ zoomFit
 				? (
-					<button onClick={fitPage} type="button" disabled={zoomStateRef.current.fitPage}>
+					<button
+						className={buttonClasses}
+						onClick={fitPage}
+						type="button"
+						disabled={zoomStateRef.current.fitPage}
+					>
 						{ icons.fitPage }
 					</button>
 				)
