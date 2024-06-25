@@ -56,7 +56,8 @@ const ZoomButtons = ({
 	zoomStart = 1,
 	minZoom = 0.1,
 	maxZoom = 5,
-	className,
+	buttonClasses,
+	groupClasses,
 	icons = {
 		zoomIn: <b>+</b>,
 		zoomOut: <b>-</b>,
@@ -165,12 +166,11 @@ const ZoomButtons = ({
 	}, [zoomStart]);
 
 	const zoomPos = zoomStateRef.current.pos;
-	const buttonClasses = `${className ?? styles.zoomButton}`;
 
 	return (
-		<div className={styles.buttonGroup}>
+		<div className={groupClasses ?? styles.buttonGroup}>
 			<ZoomButton
-				className={buttonClasses}
+				className={buttonClasses ?? styles.zoomButton}
 				disabled={zoomPos >= maxZoom}
 				start={zoomInStart}
 				end={zoomEnd}
@@ -178,7 +178,7 @@ const ZoomButtons = ({
 				{ icons.zoomIn }
 			</ZoomButton>
 			<ZoomButton
-				className={buttonClasses}
+				className={buttonClasses ?? styles.zoomButton}
 				disabled={zoomPos <= minZoom}
 				start={zoomOutStart}
 				end={zoomEnd}
@@ -188,7 +188,7 @@ const ZoomButtons = ({
 			{ zoomFit
 				? (
 					<button
-						className={buttonClasses}
+						className={buttonClasses ?? styles.zoomButton}
 						onClick={fitPage}
 						type="button"
 						disabled={zoomStateRef.current.fitPage}

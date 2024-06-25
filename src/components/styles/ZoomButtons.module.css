@@ -21,6 +21,14 @@
 	display: flex;
 	flex-direction: row;
 	align-items: flex-end;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	margin-left: auto;
+	margin-right: 3px;
+	
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
 }
 
 .buttonGroup .zoomButton:first-of-type {
