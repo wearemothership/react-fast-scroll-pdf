@@ -49,7 +49,12 @@ export interface IZoomButtons {
 	zoomStart?: number,
 	minZoom?: number,
 	maxZoom?: number,
-	className?: string
+	className?: string,
+	icons?: {
+		zoomIn?: ReactNode,
+		zoomOut?: ReactNode,
+		fitPage?: ReactNode
+	}
 }
 
 export interface IPDFDocument {
