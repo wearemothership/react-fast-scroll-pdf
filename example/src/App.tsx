@@ -69,7 +69,7 @@ const App = (): JSX.Element => {
 			setFileName(newFileName);
 		}));
 	};
-	console.log("SS", showFitPage);
+
 	return (
 		<div className="App">
 			<section>
