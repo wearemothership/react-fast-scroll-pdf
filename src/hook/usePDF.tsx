@@ -87,7 +87,7 @@ const usePDF = ({
 						viewport,
 						enableWebGL: true,
 						intent: "any",
-						annotationMode: pdfjsLib.AnnotationMode.ENABLE,
+						annotationMode: pdfjsLib.AnnotationMode.ENABLE
 					};
 
 					try {
