@@ -79,6 +79,7 @@ const usePDF = ({
 					pageCanvasRef.current.style.width = `${viewport.width}px`;
 					pageCanvasRef.current.style.height = `${viewport.height}px`;
 					const ctx = pageCanvasRef.current.getContext("2d") as CanvasRenderingContext2D;
+					ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
 					// Render PDF page into canvas context
 					const renderContext = {
@@ -86,7 +87,7 @@ const usePDF = ({
 						viewport,
 						enableWebGL: true,
 						intent: "any",
-						annotationMode: pdfjsLib.AnnotationMode.ENABLE
+						annotationMode: pdfjsLib.AnnotationMode.ENABLE,
 					};
 
 					try {
