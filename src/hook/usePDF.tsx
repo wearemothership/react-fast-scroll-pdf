@@ -74,8 +74,10 @@ const usePDF = ({
 						return;
 					}
 					const viewport = page.getViewport({ scale: scaleRef.current });
-					pageCanvasRef.current.height = viewport.height;
-					pageCanvasRef.current.width = viewport.width;
+					pageCanvasRef.current.height = viewport.height * window.devicePixelRatio;
+					pageCanvasRef.current.width = viewport.width * window.devicePixelRatio;
+					pageCanvasRef.current.style.width = `${viewport.width}px`;
+					pageCanvasRef.current.style.height = `${viewport.height}px`;
 					const ctx = pageCanvasRef.current.getContext("2d") as CanvasRenderingContext2D;
 
 					// Render PDF page into canvas context
