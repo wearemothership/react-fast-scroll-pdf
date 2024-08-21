@@ -6,7 +6,7 @@
     "sourceMap": true,
     "allowJs": true,
     "jsx": "preserve",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
