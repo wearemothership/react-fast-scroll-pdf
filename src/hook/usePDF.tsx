@@ -207,9 +207,12 @@ const usePDF = ({
 		processQueue.cancel();
 		scaleRef.current = scale;
 		renderQueue.current.length = 0;
-		const oldTopPos = scrollContainer
-			? scrollContainer.scrollTop / scrollContainer.scrollHeight
-			: 0;
+		//Make changes for fix zoom-in issue and zoom-out issue
+		const oldScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
+        const oldClientHeight = scrollContainer ? scrollContainer.clientHeight : 0;
+        const oldScrollHeight = scrollContainer ? scrollContainer.scrollHeight : 0;
+        const viewportCenter = oldScrollTop + (oldClientHeight / 2);
+        const centerRatio = viewportCenter / oldScrollHeight;
 		if (!oldHeightRef.current) {
 			oldHeightRef.current = viewportRef.current?.height ?? 300;
 		}
@@ -242,8 +245,13 @@ const usePDF = ({
 			}));
 
 			if (scrollContainer) {
-				const scroller = scrollContainer;
-				scroller.scrollTop = scrollContainer.scrollHeight * oldTopPos;
+				//Make changes for fix zoom-in issue and zoom-out issue
+				setTimeout(() => {
+                    const newScrollHeight = scrollContainer.scrollHeight;
+                    const newCenterPoint = newScrollHeight * centerRatio;
+                    const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
+                    scrollContainer.scrollTop = newScrollTop;
+                }, 0);
 			}
 		})
 			.catch((e: Error) => console.error(`Change Zoom ${e}`));
