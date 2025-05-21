@@ -247,11 +247,12 @@ const usePDF = ({
 			if (scrollContainer) {
 				//Make changes for fix zoom-in issue and zoom-out issue
 				setTimeout(() => {
-                    const newScrollHeight = scrollContainer.scrollHeight;
-                    const newCenterPoint = newScrollHeight * centerRatio;
-                    const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
-                    scrollContainer.scrollTop = newScrollTop;
-                }, 0);
+					const container = scrollContainer;
+					const newScrollHeight = container.scrollHeight;
+					const newCenterPoint = newScrollHeight * centerRatio;
+					const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+					container.scrollTop = newScrollTop;
+				}, 0);
 			}
 		})
 			.catch((e: Error) => console.error(`Change Zoom ${e}`));
