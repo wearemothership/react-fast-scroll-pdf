@@ -186,7 +186,7 @@ const ZoomButtons = ({
 				disabled={zoomPos >= maxZoom}
 				start={zoomInStart}
 				end={zoomEnd}
-				title="Zoom in new new"
+				title="Zoom in new new 2"
 			>
 				{ icons.zoomIn }
 			</ZoomButton>

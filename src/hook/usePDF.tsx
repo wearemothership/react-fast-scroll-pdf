@@ -203,34 +203,92 @@ const usePDF = ({
 		return currPage;
 	}, [scrollContainer, viewer]);
 
-	const changeZoomStart = useCallback((scale: number) => {
-		processQueue.cancel();
-		scaleRef.current = scale;
-		renderQueue.current.length = 0;
-		//Make changes for fix zoom-in issue and zoom-out issue
-		const oldScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
-        const oldClientHeight = scrollContainer ? scrollContainer.clientHeight : 0;
-        const oldScrollHeight = scrollContainer ? scrollContainer.scrollHeight : 0;
-        const viewportCenter = oldScrollTop + (oldClientHeight / 2);
-        const centerRatio = viewportCenter / oldScrollHeight;
+	// const changeZoomStart = useCallback((scale: number) => {
+	// 	processQueue.cancel();
+	// 	scaleRef.current = scale;
+	// 	renderQueue.current.length = 0;
+	// 	//Make changes for fix zoom-in issue and zoom-out issue
+	// 	const oldScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
+    //     const oldClientHeight = scrollContainer ? scrollContainer.clientHeight : 0;
+    //     const oldScrollHeight = scrollContainer ? scrollContainer.scrollHeight : 0;
+    //     const viewportCenter = oldScrollTop + (oldClientHeight / 2);
+    //     const centerRatio = viewportCenter / oldScrollHeight;
 
-		if (!oldHeightRef.current) {
-			oldHeightRef.current = viewportRef.current?.height ?? 300;
-		}
-		pdfDoc?.getPage(1).then((page: PDFPageProxy) => {
-			viewportRef.current = page.getViewport({ scale });
-			const { width, height } = viewportRef.current;
-			page.cleanup();
-			setPages((oldPages) => oldPages.map((pg, index) => {
-				if (!pg) {
-					return undefined;
-				}
+	// 	if (!oldHeightRef.current) {
+	// 		oldHeightRef.current = viewportRef.current?.height ?? 300;
+	// 	}
+	// 	pdfDoc?.getPage(1).then((page: PDFPageProxy) => {
+	// 		viewportRef.current = page.getViewport({ scale });
+	// 		const { width, height } = viewportRef.current;
+	// 		page.cleanup();
+	// 		setPages((oldPages) => oldPages.map((pg, index) => {
+	// 			if (!pg) {
+	// 				return undefined;
+	// 			}
+	// 			const { imageSrc, children } = pg.props;
+	// 			const key = `page${index}`;
+	// 			if (imageSrc) {
+	// 				return (
+	// 					<PDFPage key={key} pageNum={index} width={width} height={height} imageSrc={imageSrc}>
+	// 						{ children }
+	// 					</PDFPage>
+	// 				);
+	// 			}
+	// 			return (
+	// 				<PlaceholderPage
+	// 					key={key}
+	// 					width={width}
+	// 					height={height}
+	// 					loadingImage={loadingImage}
+	// 					spin={spinLoadingImage}
+	// 				/>
+	// 			);
+	// 		}));
+
+	// 		if (scrollContainer) {
+	// 			//Make changes for fix zoom-in issue and zoom-out issue
+	// 			setTimeout(() => {
+	// 				const container = scrollContainer;
+	// 				const newScrollHeight = container.scrollHeight;
+	// 				const newCenterPoint = newScrollHeight * centerRatio;
+	// 				const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+	// 				container.scrollTop = newScrollTop;
+	// 			}, 0);
+
+
+	// 		}
+	// 	})
+	// 		.catch((e: Error) => console.error(`Change Zoom ${e}`));
+	// }, [processQueue, scrollContainer, pdfDoc, loadingImage, spinLoadingImage]);
+
+	const changeZoomStart = useCallback((scale: number) => {
+	processQueue.cancel();
+	scaleRef.current = scale;
+	renderQueue.current.length = 0;
+
+	const container = scrollContainer;
+	if (!container) return;
+
+	const oldScrollTop = container.scrollTop;
+	const oldClientHeight = container.clientHeight;
+	const oldScrollHeight = container.scrollHeight;
+	const centerY = oldScrollTop + oldClientHeight / 2;
+	const centerRatio = centerY / oldScrollHeight;
+
+	pdfDoc?.getPage(1).then((page: PDFPageProxy) => {
+		viewportRef.current = page.getViewport({ scale });
+		const { width, height } = viewportRef.current;
+		page.cleanup();
+
+		setPages((oldPages) =>
+			oldPages.map((pg, index) => {
+				if (!pg) return undefined;
 				const { imageSrc, children } = pg.props;
 				const key = `page${index}`;
 				if (imageSrc) {
 					return (
 						<PDFPage key={key} pageNum={index} width={width} height={height} imageSrc={imageSrc}>
-							{ children }
+							{children}
 						</PDFPage>
 					);
 				}
@@ -243,50 +301,23 @@ const usePDF = ({
 						spin={spinLoadingImage}
 					/>
 				);
-			}));
+			})
+		);
 
-			if (scrollContainer) {
-				//Make changes for fix zoom-in issue and zoom-out issue
-				// setTimeout(() => {
-				// 	const container = scrollContainer;
-				// 	const newScrollHeight = container.scrollHeight;
-				// 	const newCenterPoint = newScrollHeight * centerRatio;
-				// 	const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
-				// 	container.scrollTop = newScrollTop;
-				// }, 0);
-
-
-				setTimeout(() => {
-                const container = scrollContainer;
-  				const newScrollHeight = container.scrollHeight;
-  				const newCenterPoint = newScrollHeight * centerRatio;
- 				 const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
- 				 container.scrollTop = newScrollTop;
-					}, 0);
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				const newScrollHeight = container.scrollHeight;
+				const newCenterY = newScrollHeight * centerRatio;
+				const newScrollTop = Math.max(0, newCenterY - oldClientHeight / 2);
+				container.scrollTop = newScrollTop;
+			});
+		});
+	}).catch((e: Error) => console.error(`Change Zoom ${e}`));
+}, [processQueue, scrollContainer, pdfDoc, loadingImage, spinLoadingImage]);
 
 
-					let attempts = 0;
-                    const maxAttempts = 10;
 
-                 const waitForStableScrollHeight = () => {
-                   const container = scrollContainer;
-            if (!container) return;
-
-              const newScrollHeight = container.scrollHeight;
-                if (newScrollHeight > 0 && newScrollHeight !== oldScrollHeight || attempts >= maxAttempts) {
-               const newCenterPoint = newScrollHeight * centerRatio;
-               const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
-               container.scrollTop = newScrollTop;
-                   } else {
-               attempts += 1;
-              requestAnimationFrame(waitForStableScrollHeight);
-           }
-};
-requestAnimationFrame(waitForStableScrollHeight);
-			}
-		})
-			.catch((e: Error) => console.error(`Change Zoom ${e}`));
-	}, [processQueue, scrollContainer, pdfDoc, loadingImage, spinLoadingImage]);
+	
 
 	const changeZoomEnd = useCallback(() => {
 		if (pdfDoc) {
