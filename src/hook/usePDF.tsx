@@ -211,8 +211,13 @@ const usePDF = ({
 		const oldScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
         const oldClientHeight = scrollContainer ? scrollContainer.clientHeight : 0;
         const oldScrollHeight = scrollContainer ? scrollContainer.scrollHeight : 0;
-        const viewportCenter = oldScrollTop + (oldClientHeight / 2);
-        const centerRatio = viewportCenter / oldScrollHeight;
+        // const viewportCenter = oldScrollTop + (oldClientHeight / 2);
+        // const centerRatio = viewportCenter / oldScrollHeight;
+		let centerRatio = 0.5;
+        if (oldScrollHeight > 0) {
+            const viewportCenter = oldScrollTop + (oldClientHeight / 2);
+            centerRatio = viewportCenter / oldScrollHeight;
+        }
 		if (!oldHeightRef.current) {
 			oldHeightRef.current = viewportRef.current?.height ?? 300;
 		}
@@ -249,9 +254,14 @@ const usePDF = ({
 				setTimeout(() => {
 					const container = scrollContainer;
 					const newScrollHeight = container.scrollHeight;
-					const newCenterPoint = newScrollHeight * centerRatio;
-					const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
-					container.scrollTop = newScrollTop;
+					 if (newScrollHeight > 0) {
+    const newCenterPoint = newScrollHeight * centerRatio;
+    const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+    container.scrollTop = newScrollTop;
+  }
+					// const newCenterPoint = newScrollHeight * centerRatio;
+					// const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+					// container.scrollTop = newScrollTop;
 				}, 0);
 			}
 		})
