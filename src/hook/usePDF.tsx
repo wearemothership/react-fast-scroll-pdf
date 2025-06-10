@@ -211,13 +211,9 @@ const usePDF = ({
 		const oldScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
         const oldClientHeight = scrollContainer ? scrollContainer.clientHeight : 0;
         const oldScrollHeight = scrollContainer ? scrollContainer.scrollHeight : 0;
-        // const viewportCenter = oldScrollTop + (oldClientHeight / 2);
-        // const centerRatio = viewportCenter / oldScrollHeight;
-		let centerRatio = 0.5;
-        if (oldScrollHeight > 0) {
-            const viewportCenter = oldScrollTop + (oldClientHeight / 2);
-            centerRatio = viewportCenter / oldScrollHeight;
-        }
+        const viewportCenter = oldScrollTop + (oldClientHeight / 2);
+        const centerRatio = viewportCenter / oldScrollHeight;
+
 		if (!oldHeightRef.current) {
 			oldHeightRef.current = viewportRef.current?.height ?? 300;
 		}
@@ -251,18 +247,42 @@ const usePDF = ({
 
 			if (scrollContainer) {
 				//Make changes for fix zoom-in issue and zoom-out issue
+				// setTimeout(() => {
+				// 	const container = scrollContainer;
+				// 	const newScrollHeight = container.scrollHeight;
+				// 	const newCenterPoint = newScrollHeight * centerRatio;
+				// 	const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+				// 	container.scrollTop = newScrollTop;
+				// }, 0);
+
+
 				setTimeout(() => {
-					const container = scrollContainer;
-					const newScrollHeight = container.scrollHeight;
-					 if (newScrollHeight > 0) {
-    const newCenterPoint = newScrollHeight * centerRatio;
-    const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
-    container.scrollTop = newScrollTop;
-  }
-					// const newCenterPoint = newScrollHeight * centerRatio;
-					// const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
-					// container.scrollTop = newScrollTop;
-				}, 0);
+                const container = scrollContainer;
+  				const newScrollHeight = container.scrollHeight;
+  				const newCenterPoint = newScrollHeight * centerRatio;
+ 				 const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+ 				 container.scrollTop = newScrollTop;
+					}, 0);
+
+
+					let attempts = 0;
+                    const maxAttempts = 10;
+
+                 const waitForStableScrollHeight = () => {
+                   const container = scrollContainer;
+            if (!container) return;
+
+              const newScrollHeight = container.scrollHeight;
+                if (newScrollHeight > 0 && newScrollHeight !== oldScrollHeight || attempts >= maxAttempts) {
+               const newCenterPoint = newScrollHeight * centerRatio;
+               const newScrollTop = Math.max(0, newCenterPoint - (container.clientHeight / 2));
+               container.scrollTop = newScrollTop;
+                   } else {
+               attempts += 1;
+              requestAnimationFrame(waitForStableScrollHeight);
+           }
+};
+requestAnimationFrame(waitForStableScrollHeight);
 			}
 		})
 			.catch((e: Error) => console.error(`Change Zoom ${e}`));
