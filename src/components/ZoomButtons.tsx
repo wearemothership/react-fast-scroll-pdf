@@ -177,7 +177,7 @@ const ZoomButtons = ({
 				disabled={zoomPos <= minZoom}
 				start={zoomOutStart}
 				end={zoomEnd}
-				title="Zoom out 5"
+				title="Zoom out"
 			>
 				{ icons.zoomOut }
 			</ZoomButton>
@@ -186,7 +186,7 @@ const ZoomButtons = ({
 				disabled={zoomPos >= maxZoom}
 				start={zoomInStart}
 				end={zoomEnd}
-				title="Zoom in new new 5"
+				title="Zoom in"
 			>
 				{ icons.zoomIn }
 			</ZoomButton>
