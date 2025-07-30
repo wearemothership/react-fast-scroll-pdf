@@ -1,4 +1,4 @@
-import React, {
+import {
 	ReactNode, useCallback, useEffect, useRef
 } from "react";
 import styles from "./styles/ZoomButtons.module.css";
@@ -32,7 +32,7 @@ const ZoomButton = ({
 	start,
 	end,
 	children
-}: IZoomButton): JSX.Element => (
+}: IZoomButton) => (
 	<button
 		type="button"
 		className={className}
@@ -64,7 +64,7 @@ const ZoomButtons = ({
 		zoomOut: <b>-</b>,
 		fitPage: <b>Fit</b>
 	}
-}: IZoomButtons): JSX.Element => {
+}: IZoomButtons) => {
 	const zoomStateRef = useRef<IZoomState>({
 		pos: zoomStart || 1,
 		direction: ZoomDirection.None,

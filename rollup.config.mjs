@@ -22,12 +22,19 @@ export default {
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
+				"react/jsx-runtime": "jsxRuntime",
 				"pdfjs-dist": "pdfjsLib",
+				"pdfjs-dist/legacy/build/pdf.mjs": "pdfjsLib",
 				"pdfjs-dist/web/pdf_viewer.mjs": "pdf_viewer_mjs",
+				"pdfjs-dist/legacy/web/pdf_viewer.mjs": "pdf_viewer_mjs",
 				"pdfjs-dist/build/pdf.worker.mjs": "pdf.worker",
 				lodash: "_",
 				immer: "immer",
-				"html-react-parser": "parse"
+				"html-react-parser": "parse",
+				"@babel/runtime/helpers/defineProperty": "_defineProperty",
+				"@babel/runtime/helpers/asyncToGenerator": "_asyncToGenerator",
+				"@babel/runtime/helpers/slicedToArray": "_slicedToArray",
+				"@babel/runtime/regenerator": "_regeneratorRuntime"
 			}
 		},
 		{
@@ -38,12 +45,19 @@ export default {
 			globals: {
 				react: "React",
 				"react-dom": "ReactDOM",
+				"react/jsx-runtime": "jsxRuntime",
 				"pdfjs-dist": "pdfjsLib",
+				"pdfjs-dist/legacy/build/pdf.mjs": "pdfjsLib",
 				"pdfjs-dist/web/pdf_viewer.mjs": "pdf_viewer_mjs",
+				"pdfjs-dist/legacy/web/pdf_viewer.mjs": "pdf_viewer_mjs",
 				"pdfjs-dist/build/pdf.worker.mjs": "pdf.worker",
 				lodash: "_",
 				immer: "immer",
-				"html-react-parser": "parse"
+				"html-react-parser": "parse",
+				"@babel/runtime/helpers/defineProperty": "_defineProperty",
+				"@babel/runtime/helpers/asyncToGenerator": "_asyncToGenerator",
+				"@babel/runtime/helpers/slicedToArray": "_slicedToArray",
+				"@babel/runtime/regenerator": "_regeneratorRuntime"
 			}
 		}
 	],

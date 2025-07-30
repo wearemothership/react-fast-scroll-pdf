@@ -1,5 +1,5 @@
 import type { DocumentInitParameters } from "pdfjs-dist/types/src/display/api";
-import type { ReactNode, RefObject } from "react";
+import type { ReactNode, RefObject, ReactElement } from "react";
 
 type TDivType = "place" | "canvas";
 
@@ -34,7 +34,7 @@ export type TUsePDF = {
 	changeZoom: (scale: number) => void,
 	changeZoomStart: (scale: number) => void,
 	changeZoomEnd: () => void,
-	pages: (JSX.Element | undefined)[],
+	pages: (ReactElement | undefined)[],
 	viewportWidth?: number | undefined,
 	viewportHeight?: number | undefined,
 };
@@ -60,9 +60,9 @@ export interface IZoomButtons {
 }
 
 export interface IPDFDocument {
-	scrollContainerRef?: RefObject<HTMLDivElement>,
-	viewerRef?: RefObject<HTMLDivElement>,
-	pages: (JSX.Element | undefined)[],
+	scrollContainerRef?: RefObject<HTMLDivElement | null>,
+	viewerRef?: RefObject<HTMLDivElement | null>,
+	pages: (ReactElement | undefined)[],
 	className?: string,
 	rowGap?: string
 }

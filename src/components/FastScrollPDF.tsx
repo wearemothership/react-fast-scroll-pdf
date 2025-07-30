@@ -1,4 +1,4 @@
-import React, {
+import {
 	useRef, useEffect, useState, useCallback
 } from "react";
 import _ from "lodash";
@@ -11,7 +11,7 @@ import type { IFastScrollPDF } from "../types/fastScrollPDF";
 const FastScrollPDF = ({
 	source, loadingImage, enableAnnotations = true, showFitPage = false,
 	className, spinLoadingImage = false, hideZoom = false
-}: IFastScrollPDF): JSX.Element => {
+}: IFastScrollPDF) => {
 	const [zoom, setZoom] = useState(1);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const viewerRef = useRef<HTMLDivElement>(null);

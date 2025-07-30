@@ -5,8 +5,8 @@ import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import "pdfjs-dist/legacy/build/pdf.worker.mjs";
 // @ts-ignore
 import { PDFLinkService } from "pdfjs-dist/legacy/web/pdf_viewer.mjs";
-import React, {
-	useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect
+import {
+	useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect, ReactElement
 } from "react";
 import _ from "lodash";
 import { DocumentInitParameters, PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/src/display/api";
@@ -15,7 +15,7 @@ import { produce } from "immer";
 import parse from "html-react-parser";
 import PDFPage from "../components/PDFPage";
 import PlaceholderPage from "../components/PlaceholderPage";
-import type { IUsePDF, TUsePDF } from "../types/fastScrollPDF";
+import type { IPDFPage, IUsePDF, TUsePDF } from "../types/fastScrollPDF";
 
 const CMAP_URL = "pdfjs-dist/cmaps/";
 
@@ -47,16 +47,16 @@ const usePDF = ({
 	viewer
 }: IUsePDF): TUsePDF => {
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
-	const [pages, setPages] = useState<(JSX.Element | undefined)[]>([]);
+	const [pages, setPages] = useState<(ReactElement | undefined)[]>([]);
 	const scaleRef = useRef(1);
-	const prevSource = useRef<DocumentInitParameters>();
-	const viewportRef = useRef<PageViewport>();
+	const prevSource = useRef<DocumentInitParameters | null>(null);
+	const viewportRef = useRef<PageViewport | null>(null);
 	const renderQueue = useRef<number[]>([]);
 	const pageCanvasRef = useRef(document.createElement("canvas"));
 	const linkService = useMemo(() => new PDFLinkService(), []);
 	const pageRendering = useRef(false);
 	const docLoaded = useRef(false);
-	const oldHeightRef = useRef<number>();
+	const oldHeightRef = useRef<number | null>(null);
 
 	const processQueue = useMemo(() => _.debounce(async () => {
 		const renderPage = async (num: number) => {
@@ -85,6 +85,7 @@ const usePDF = ({
 					const renderContext = {
 						canvasContext: ctx,
 						viewport,
+						canvas: pageCanvasRef.current,
 						enableWebGL: true,
 						intent: "any",
 						annotationMode: pdfjsLib.AnnotationMode.ENABLE
@@ -115,7 +116,8 @@ const usePDF = ({
 								annotationCanvasMap: null,
 								annotationEditorUIManager: null,
 								page,
-								viewport
+								viewport,
+								structTreeLayer: null
 							});
 
 							layer.render({
@@ -234,7 +236,7 @@ const usePDF = ({
 				if (!pg) {
 					return undefined;
 				}
-				const { imageSrc, children } = pg.props;
+				const { imageSrc, children } = pg.props as IPDFPage;
 				const key = `page${index}`;
 				if (imageSrc) {
 					return (
@@ -270,7 +272,7 @@ const usePDF = ({
 
 	const changeZoomEnd = useCallback(() => {
 		if (pdfDoc) {
-			oldHeightRef.current = undefined;
+			oldHeightRef.current = null;
 			const currPage = getCurrentPage();
 			queueRenderPage(currPage, true);
 			if (currPage + 1 < pdfDoc.numPages) {
@@ -292,7 +294,7 @@ const usePDF = ({
 	const renderCurrentPage = useCallback((force = false) => {
 		const currPage = getCurrentPage();
 		const nextPage = Math.min(currPage + 1, pdfDoc?.numPages || 1);
-		const isPageRendered = (pageNo: number) => !!pages[pageNo]?.props.imageSrc;
+		const isPageRendered = (pageNo: number) => !!(pages[pageNo]?.props as IPDFPage)?.imageSrc;
 		if (force || !isPageRendered(nextPage)) {
 			queueRenderPage(nextPage, true);
 		}
