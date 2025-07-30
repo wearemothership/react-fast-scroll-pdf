@@ -1,6 +1,5 @@
 declare const styles: {
-  readonly "pdfDocument": string;
-  readonly "viewer": string;
+	readonly "pdfDocument": string;
+	readonly "viewer": string;
 };
 export = styles;
-

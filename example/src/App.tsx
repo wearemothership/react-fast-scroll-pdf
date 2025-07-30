@@ -62,12 +62,17 @@ const App = (): JSX.Element => {
 		}
 	};
 
-	const loadFile = (newFileName: string, newFile: string) => {
-		fetch(newFile).then((response) => response.arrayBuffer().then((buff) => {
+	const loadFile = async (newFileName: string, newFile: string) => {
+		try {
+			const response = await fetch(newFile);
+			const buff = await response.arrayBuffer();
 			const arr = new Uint8Array(buff as ArrayBuffer);
 			setFile(arr);
 			setFileName(newFileName);
-		}));
+		}
+		catch (error) {
+			console.error("Failed to load file:", error);
+		}
 	};
 
 	return (
@@ -116,12 +121,14 @@ const App = (): JSX.Element => {
 					</label>
 				</div>
 				<div className="flex flexCenterRow flexSpaced100">
-					{ !hideZoom ? (
-						<label htmlFor="showFitPage">
-							<small>Show Fit Page: </small>
-							<input name="showFitPage" type="checkbox" checked={showFitPage} onChange={() => setShowFitPage(!showFitPage)} />
-						</label>
-					) : null }
+					{ !hideZoom
+						? (
+							<label htmlFor="showFitPage">
+								<small>Show Fit Page: </small>
+								<input name="showFitPage" type="checkbox" checked={showFitPage} onChange={() => setShowFitPage(!showFitPage)} />
+							</label>
+						)
+						: null }
 				</div>
 			</section>
 

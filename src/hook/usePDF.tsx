@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable import/no-unresolved */
+ 
 // @ts-ignore
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import "pdfjs-dist/legacy/build/pdf.worker.mjs";
@@ -69,7 +69,7 @@ const usePDF = ({
 					pageRendering.current = true;
 					const page = await pdfDoc.getPage(num);
 					// kill the render early if Q cleared
-					if 	(renderQueue.current.length === 0) {
+					if (renderQueue.current.length === 0) {
 						pageRendering.current = false;
 						return;
 					}
@@ -203,7 +203,7 @@ const usePDF = ({
 		return currPage;
 	}, [scrollContainer, viewer]);
 
-	const pendingScrollRef = useRef<{centerRatio: number} | null>(null);
+	const pendingScrollRef = useRef<{ centerRatio: number } | null>(null);
 
 	const changeZoomStart = useCallback((scale: number) => {
 		processQueue.cancel();
@@ -218,7 +218,8 @@ const usePDF = ({
 			const viewportCenter = oldScrollTop + (oldClientHeight / 2);
 			const centerRatio = oldScrollHeight > 0 ? viewportCenter / oldScrollHeight : 0;
 			pendingScrollRef.current = { centerRatio };
-		} else {
+		}
+		else {
 			pendingScrollRef.current = null;
 		}
 
@@ -256,16 +257,16 @@ const usePDF = ({
 			.catch((e: Error) => console.error(`Change Zoom ${e}`));
 	}, [processQueue, scrollContainer, pdfDoc, loadingImage, spinLoadingImage]);
 
-    useLayoutEffect(() => {
-        if (pendingScrollRef.current && scrollContainer) {
-            const { centerRatio } = pendingScrollRef.current;
-            const newScrollHeight = scrollContainer.scrollHeight;
-            const newCenterPoint = newScrollHeight * centerRatio;
-            const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
-            scrollContainer.scrollTop = newScrollTop;
-            pendingScrollRef.current = null;
-        }
-    }, [pages, scrollContainer]);
+	useLayoutEffect(() => {
+		if (pendingScrollRef.current && scrollContainer) {
+			const { centerRatio } = pendingScrollRef.current;
+			const newScrollHeight = scrollContainer.scrollHeight;
+			const newCenterPoint = newScrollHeight * centerRatio;
+			const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
+			scrollContainer.scrollTo({ top: newScrollTop });
+			pendingScrollRef.current = null;
+		}
+	}, [pages, scrollContainer]);
 
 	const changeZoomEnd = useCallback(() => {
 		if (pdfDoc) {

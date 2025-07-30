@@ -32,7 +32,7 @@ const ZoomButton = ({
 	start,
 	end,
 	children
-}:IZoomButton): JSX.Element => (
+}: IZoomButton): JSX.Element => (
 	<button
 		type="button"
 		className={className}
@@ -70,7 +70,7 @@ const ZoomButtons = ({
 		direction: ZoomDirection.None,
 		lastTimestamp: 0,
 		fitPage: false
-	} ?? 1);
+	});
 
 	const doZoom = useCallback((timestamp: number) => {
 		const { pos, direction, lastTimestamp } = zoomStateRef.current;
