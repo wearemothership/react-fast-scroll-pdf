@@ -256,16 +256,16 @@ const usePDF = ({
 			.catch((e: Error) => console.error(`Change Zoom ${e}`));
 	}, [processQueue, scrollContainer, pdfDoc, loadingImage, spinLoadingImage]);
 
-    useLayoutEffect(() => {
-        if (pendingScrollRef.current && scrollContainer) {
-            const { centerRatio } = pendingScrollRef.current;
-            const newScrollHeight = scrollContainer.scrollHeight;
-            const newCenterPoint = newScrollHeight * centerRatio;
-            const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
-            scrollContainer.scrollTop = newScrollTop;
-            pendingScrollRef.current = null;
-        }
-    }, [pages, scrollContainer]);
+	useLayoutEffect(() => {
+		if (pendingScrollRef.current && scrollContainer) {
+			const { centerRatio } = pendingScrollRef.current;
+			const newScrollHeight = scrollContainer.scrollHeight;
+			const newCenterPoint = newScrollHeight * centerRatio;
+			const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
+			scrollContainer.scrollTop = newScrollTop;
+			pendingScrollRef.current = null;
+		}
+	}, [pages, scrollContainer]);
 
 	const changeZoomEnd = useCallback(() => {
 		if (pdfDoc) {
