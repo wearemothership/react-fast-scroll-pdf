@@ -1,10 +1,13 @@
 import Spinner from "../assets/spinner.gif";
 import styles from "./styles/PlaceholderPage.module.css";
 import type { IPlaceholderPage } from "../types/fastScrollPDF";
+import {
+	FC
+} from "react";
 
-const PlaceholderPage = ({
+const PlaceholderPage: FC<IPlaceholderPage> = ({
 	width, height, type = "place", loadingImage = Spinner, spin
-}: IPlaceholderPage) => {
+}) => {
 	const classes = [
 		spin ? styles.spinner : "",
 		styles.centered
