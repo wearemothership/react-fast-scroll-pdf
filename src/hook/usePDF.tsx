@@ -1,9 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
- 
-// @ts-ignore
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import "pdfjs-dist/legacy/build/pdf.worker.mjs";
-// @ts-ignore
 import { PDFLinkService } from "pdfjs-dist/legacy/web/pdf_viewer.mjs";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect
