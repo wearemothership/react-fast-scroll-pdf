@@ -265,7 +265,7 @@ const usePDF = ({
 			const newScrollHeight = scrollContainer.scrollHeight;
 			const newCenterPoint = newScrollHeight * centerRatio;
 			const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
-			scrollContainer.scrollTo({ top: newScrollTop });
+			scrollContainer.scrollTop = newScrollTop;
 			pendingScrollRef.current = null;
 		}
 	}, [pages, scrollContainer]);
