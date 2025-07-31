@@ -47,7 +47,7 @@ const usePDF = ({
 	viewer
 }: IUsePDF): TUsePDF => {
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
-	const [pages, setPages] = useState<(IPDFPage | undefined)[]>([]);
+	const [pages, setPages] = useState<(ReactElement<IPDFPage> | undefined)[]>([]);
 	const scaleRef = useRef(1);
 	const prevSource = useRef<DocumentInitParameters | null>(null);
 	const viewportRef = useRef<PageViewport | null>(null);
