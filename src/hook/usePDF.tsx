@@ -47,7 +47,7 @@ const usePDF = ({
 	viewer
 }: IUsePDF): TUsePDF => {
 	const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy>();
-	const [pages, setPages] = useState<(ReactElement | undefined)[]>([]);
+	const [pages, setPages] = useState<(IPDFPage | undefined)[]>([]);
 	const scaleRef = useRef(1);
 	const prevSource = useRef<DocumentInitParameters | null>(null);
 	const viewportRef = useRef<PageViewport | null>(null);
@@ -236,7 +236,7 @@ const usePDF = ({
 				if (!pg) {
 					return undefined;
 				}
-				const { imageSrc, children } = pg.props as IPDFPage;
+				const { imageSrc, children } = pg.props;
 				const key = `page${index}`;
 				if (imageSrc) {
 					return (
@@ -294,7 +294,7 @@ const usePDF = ({
 	const renderCurrentPage = useCallback((force = false) => {
 		const currPage = getCurrentPage();
 		const nextPage = Math.min(currPage + 1, pdfDoc?.numPages || 1);
-		const isPageRendered = (pageNo: number) => !!(pages[pageNo]?.props as IPDFPage)?.imageSrc;
+		const isPageRendered = (pageNo: number) => !!(pages[pageNo]?.props)?.imageSrc;
 		if (force || !isPageRendered(nextPage)) {
 			queueRenderPage(nextPage, true);
 		}
