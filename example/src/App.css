@@ -117,6 +117,7 @@ section {
 	max-height: 400px;
 	padding: 1em;
 	margin-bottom: 1em;
+	/* max-width: 1000px !important; */
 	overflow: hidden;
 }
 
@@ -148,6 +149,7 @@ section {
 .flexCenterRow {
 	flex-direction: row;
 	align-items: center;
+	max-width: 1000px !important;
 }
 
 .flexSpaced100 {
@@ -161,8 +163,10 @@ section {
 
 .pdfScrollContainer {
 	width: 100%;
+	max-width: 1000px !important;
 	background-color: rgb(242, 242, 242);
 	padding: 2rem;
+	box-sizing: border-box;
 }
 
 .fastScroll {

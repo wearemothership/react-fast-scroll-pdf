@@ -1,5 +1,5 @@
-import React, {
-	ReactNode, useCallback, useEffect, useRef
+import {
+	ReactNode, useCallback, useEffect, useRef, FC
 } from "react";
 import styles from "./styles/ZoomButtons.module.css";
 import type { IZoomButtons } from "../types/fastScrollPDF";
@@ -26,13 +26,13 @@ interface IZoomButton {
 	children: ReactNode
 }
 
-const ZoomButton = ({
+const ZoomButton: FC<IZoomButton> = ({
 	className,
 	disabled,
 	start,
 	end,
 	children
-}: IZoomButton): JSX.Element => (
+}: IZoomButton) => (
 	<button
 		type="button"
 		className={className}
@@ -48,7 +48,7 @@ const ZoomButton = ({
 	</button>
 );
 
-const ZoomButtons = ({
+const ZoomButtons: FC<IZoomButtons> = ({
 	zoomChangeStart,
 	zoomChangeEnd,
 	zoomFit,
@@ -64,7 +64,7 @@ const ZoomButtons = ({
 		zoomOut: <b>-</b>,
 		fitPage: <b>Fit</b>
 	}
-}: IZoomButtons): JSX.Element => {
+}: IZoomButtons) => {
 	const zoomStateRef = useRef<IZoomState>({
 		pos: zoomStart || 1,
 		direction: ZoomDirection.None,
