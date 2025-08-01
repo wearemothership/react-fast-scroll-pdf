@@ -1,7 +1,7 @@
 import type { DocumentInitParameters } from "pdfjs-dist/types/src/display/api";
 import type { ReactNode, RefObject } from "react";
 
-type TDivType = "place" | "canvas"
+type TDivType = "place" | "canvas";
 
 interface IPage {
 	width: number,
@@ -37,9 +37,9 @@ export type TUsePDF = {
 	pages: (JSX.Element | undefined)[],
 	viewportWidth?: number | undefined,
 	viewportHeight?: number | undefined,
-}
+};
 
-export type TPage = IPlaceholderPage | IPDFPage
+export type TPage = IPlaceholderPage | IPDFPage;
 
 export interface IZoomButtons {
 	zoomChangeStart: (zoom: number) => void,

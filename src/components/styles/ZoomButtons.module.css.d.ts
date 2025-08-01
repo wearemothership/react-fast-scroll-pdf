@@ -1,6 +1,5 @@
 declare const styles: {
-  readonly "zoomButton": string;
-  readonly "buttonGroup": string;
+	readonly "zoomButton": string;
+	readonly "buttonGroup": string;
 };
 export = styles;
-

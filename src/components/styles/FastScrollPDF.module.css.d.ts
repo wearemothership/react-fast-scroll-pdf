@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "fastScrollPDF": string;
+	readonly "fastScrollPDF": string;
 };
 export = styles;
-

@@ -1,9 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable import/no-unresolved */
-// @ts-ignore
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import "pdfjs-dist/legacy/build/pdf.worker.mjs";
-// @ts-ignore
 import { PDFLinkService } from "pdfjs-dist/legacy/web/pdf_viewer.mjs";
 import React, {
 	useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect
@@ -69,7 +65,7 @@ const usePDF = ({
 					pageRendering.current = true;
 					const page = await pdfDoc.getPage(num);
 					// kill the render early if Q cleared
-					if 	(renderQueue.current.length === 0) {
+					if (renderQueue.current.length === 0) {
 						pageRendering.current = false;
 						return;
 					}
@@ -203,7 +199,7 @@ const usePDF = ({
 		return currPage;
 	}, [scrollContainer, viewer]);
 
-	const pendingScrollRef = useRef<{centerRatio: number} | null>(null);
+	const pendingScrollRef = useRef<{ centerRatio: number } | null>(null);
 
 	const changeZoomStart = useCallback((scale: number) => {
 		processQueue.cancel();
@@ -218,7 +214,8 @@ const usePDF = ({
 			const viewportCenter = oldScrollTop + (oldClientHeight / 2);
 			const centerRatio = oldScrollHeight > 0 ? viewportCenter / oldScrollHeight : 0;
 			pendingScrollRef.current = { centerRatio };
-		} else {
+		}
+		else {
 			pendingScrollRef.current = null;
 		}
 
