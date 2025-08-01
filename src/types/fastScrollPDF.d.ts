@@ -1,5 +1,5 @@
 import type { DocumentInitParameters } from "pdfjs-dist/types/src/display/api";
-import type { ReactNode, RefObject, ReactElement} from "react";
+import type { ReactNode, RefObject, ReactElement } from "react";
 
 type TDivType = "place" | "canvas";
 
