@@ -205,7 +205,7 @@ const usePDF = ({
 		return currPage;
 	}, [scrollContainer, viewer]);
 
-	const pendingScrollRef = useRef<{ centerRatio: number } | null>(null);
+	const pendingScrollRef = useRef<{ xRatio: number, yRatio: number } | null>(null);
 
 	const changeZoomStart = useCallback((scale: number) => {
 		processQueue.cancel();
@@ -214,12 +214,15 @@ const usePDF = ({
 
 		// Calculate center ratio for scroll restoration
 		if (scrollContainer) {
-			const oldScrollTop = scrollContainer.scrollTop;
-			const oldClientHeight = scrollContainer.clientHeight;
-			const oldScrollHeight = scrollContainer.scrollHeight;
-			const viewportCenter = oldScrollTop + (oldClientHeight / 2);
-			const centerRatio = oldScrollHeight > 0 ? viewportCenter / oldScrollHeight : 0;
-			pendingScrollRef.current = { centerRatio };
+			const {
+				scrollTop, scrollLeft, clientWidth, clientHeight, scrollWidth, scrollHeight
+			} = scrollContainer
+			const yCenter = scrollTop + (clientHeight / 2);
+			const xCenter = scrollLeft + (clientWidth / 2);
+			pendingScrollRef.current = {
+				xRatio: scrollWidth > 0 ? xCenter / scrollWidth : 0,
+				yRatio: scrollHeight > 0 ? yCenter / scrollHeight : 0
+			};
 		}
 		else {
 			pendingScrollRef.current = null;
@@ -261,11 +264,16 @@ const usePDF = ({
 
 	useLayoutEffect(() => {
 		if (pendingScrollRef.current && scrollContainer) {
-			const { centerRatio } = pendingScrollRef.current;
-			const newScrollHeight = scrollContainer.scrollHeight;
-			const newCenterPoint = newScrollHeight * centerRatio;
-			const newScrollTop = Math.max(0, newCenterPoint - (scrollContainer.clientHeight / 2));
+			const { xRatio, yRatio } = pendingScrollRef.current;
+			const { 
+				scrollWidth, scrollHeight, clientWidth, clientHeight
+			} = scrollContainer;
+			const newYCenterPoint = scrollHeight * yRatio;
+			const newScrollTop = Math.max(0, newYCenterPoint - (clientHeight / 2));
+			const newXCenterPoint = scrollWidth * xRatio;
+			const newScrollLeft = Math.max(0, newXCenterPoint - (clientWidth / 2));
 			scrollContainer.scrollTop = newScrollTop;
+			scrollContainer.scrollLeft = newScrollLeft;
 			pendingScrollRef.current = null;
 		}
 	}, [pages, scrollContainer]);
